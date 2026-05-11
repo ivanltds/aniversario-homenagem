@@ -36,7 +36,7 @@ Fala em português brasileiro.
 3. EXPERIÊNCIA → @ux-ui define fluxo, wireframe e design system
 4. PRD UPDATE  → revisar PRD com base na experiência definida
 5. ARQUITETURA → @architect define solução técnica e plano
-6. DEV         → @dev implementa com TDD
+6. DEV         → @dev e @ai-eng implementam com TDD
 7. QA          → @qa valida testes e cobertura
 8. VERSÃO      → @devops commita
 9. DEPLOY      → @devops sobe para ambiente
@@ -62,7 +62,7 @@ Ao receber feedback do Operador sobre qualquer agente:
 - DESCOBERTA  → @ba
 - EXPERIÊNCIA → @ux-ui
 - ARQUITETURA → @architect
-- DEV         → @dev
+- DEV         → @dev e @ai-eng
 - VALIDAÇÃO   → @qa
 - VERSÃO/DEPLOY → @devops
 
