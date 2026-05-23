@@ -44,7 +44,12 @@ test('PlayerState - inicialização e navegação de faixas', () => {
 test('GalleryState - alternância de abas e retorno de fotos corretas', () => {
   const photosData = {
     sozinha: [{ src: 'fotos/sozinha/1.jpg', caption: 'Legenda 1' }],
-    'comigo-ivan': [{ src: 'fotos/comigo-ivan/2.jpg', caption: 'Legenda 2' }],
+    'comigo-ivan': [
+      { src: 'fotos/comigo-ivan/2.jpg', caption: 'Legenda 2' },
+      { src: 'fotos/comigo-ivan/3.jpg', caption: 'Legenda 3' },
+      { src: 'fotos/comigo-ivan/4.jpg', caption: 'Legenda 4' },
+      { src: 'fotos/comigo-ivan/5.jpg', caption: 'Legenda 5' }
+    ],
     zuadas: [{ src: 'fotos/zuadas/3.jpg', caption: 'Legenda 3' }],
     iuri: [{ src: 'fotos/iuri/4.jpg', caption: 'Legenda 4' }]
   };
@@ -60,29 +65,50 @@ test('GalleryState - alternância de abas e retorno de fotos corretas', () => {
   assert.strictEqual(gallery.currentTab, 'comigo-ivan');
   assert.deepStrictEqual(newImages, photosData['comigo-ivan']);
 
+  // Randomização de fotos (deve conter os mesmos itens, mas pode estar em ordens distintas)
+  const randomized = gallery.getRandomizedImages('comigo-ivan');
+  assert.strictEqual(randomized.length, photosData['comigo-ivan'].length);
+  
+  // Garantir que todos os itens originais estão na lista randomizada
+  photosData['comigo-ivan'].forEach(img => {
+    assert.ok(randomized.some(r => r.src === img.src && r.caption === img.caption));
+  });
+
   // Alterar para aba inválida deve manter a atual
   gallery.switchTab('invalida');
   assert.strictEqual(gallery.currentTab, 'comigo-ivan');
 });
 
-test('LetterState - abertura, fechamento e controle da carta', () => {
+test('LetterState - abertura, fechamento, controle e fluxo da carta', () => {
   const letter = new LetterState();
 
   // Estado inicial
   assert.strictEqual(letter.isOpen, false);
   assert.strictEqual(letter.isTyped, false);
+  assert.strictEqual(letter.getFlowState(), 'flower');
 
   // Abrir carta
   letter.open();
   assert.strictEqual(letter.isOpen, true);
+  assert.strictEqual(letter.getFlowState(), 'letter');
 
   // Marcar como digitada
   letter.setTyped(true);
   assert.strictEqual(letter.isTyped, true);
 
+  // Alterar o flowState para transitioning e depois para hero
+  letter.setFlowState('transitioning');
+  assert.strictEqual(letter.getFlowState(), 'transitioning');
+
+  letter.setFlowState('hero');
+  assert.strictEqual(letter.getFlowState(), 'hero');
+
+  // Tentar setar um flowState inválido não deve alterar
+  letter.setFlowState('invalid_state');
+  assert.strictEqual(letter.getFlowState(), 'hero');
+
   // Fechar carta
   letter.close();
   assert.strictEqual(letter.isOpen, false);
-  // O estado digitado pode ser mantido ou resetado (vamos manter como true para saber se já foi lido)
   assert.strictEqual(letter.isTyped, true);
 });
