@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Para Minha Bianca ❤️ 21 Anos</title>
+  
+  <!-- Fontes Premium -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            champagne: '#FDFBF7',
+            alabaster: '#FFF9F2',
+            rosacha: '#F2C6C2',
+            dourado: '#C99A5C',
+            bordo: '#5C1322',
+            chocolate: '#3A2422',
+          },
+          fontFamily: {
+            serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            manuscrita: ['Caveat', 'cursive'],
+          },
+          animation: {
+            'spin-slow': 'spin 12s linear infinite',
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Estilos Customizados -->
+  <style>
+    /* Transição suave de entrada */
+    .fade-transition {
+      transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* Corações Flutuantes */
+    .floating-heart {
+      position: fixed;
+      bottom: -50px;
+      pointer-events: none;
+      z-index: 30;
+      animation: floatUp 6s linear forwards;
+    }
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(0.5) rotate(0deg);
+        opacity: 0;
+      }
+      15% {
+        opacity: 0.8;
+      }
+      85% {
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(-110vh) scale(1.2) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Grid do Envelope 3D */
+    .envelope-wrapper {
+      perspective: 1000px;
+    }
+    .envelope {
+      position: relative;
+      width: 290px;
+      height: 190px;
+      background-color: #F2C6C2; /* Rosa Chá */
+      border-radius: 0 0 8px 8px;
+      box-shadow: 0 10px 25px rgba(92, 19, 34, 0.12);
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+    }
+    .envelope-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 145px solid transparent;
+      border-right: 145px solid transparent;
+      border-top: 95px solid #E5A9A4; /* Rosa Chá mais escuro */
+      z-index: 30;
+      transform-origin: top;
+      transition: transform 0.5s ease, z-index 0.3s ease;
+    }
+    .open-flap {
+      transform: rotateX(180deg);
+      z-index: 10;
+    }
+    .envelope-pocket {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 110px;
+      background-color: #F6D2CE; /* Detalhe do bolso */
+      border-radius: 0 0 8px 8px;
+      z-index: 25;
+    }
+    .envelope-pocket::before {
+      content: '';
+      position: absolute;
+      top: -95px;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 145px solid transparent;
+      border-right: 145px solid transparent;
+      border-bottom: 95px solid #F6D2CE;
+    }
+    .letter-paper {
+      position: absolute;
+      bottom: 15px;
+      left: 10px;
+      right: 10px;
+      height: 150px;
+      background-color: #FFF9F2; /* Alabaster Warm */
+      border: 1.5px solid #C99A5C; /* Dourado */
+      border-radius: 4px;
+      padding: 14px;
+      z-index: 20;
+      transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), height 0.7s ease, z-index 0.7s ease;
+      overflow: hidden;
+    }
+    .letter-open {
+      transform: translateY(-160px) scale(1.1);
+      height: 420px;
+      z-index: 45;
+      box-shadow: 0 15px 35px rgba(92, 19, 34, 0.2);
+    }
+    
+    /* Visibilidade do botão de fechar a carta */
+    #btn-close-letter {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .letter-open #btn-close-letter {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Efeito de digitação com cursor romântico */
+    .typed-cursor::after {
+      content: '❤️';
+      margin-left: 2px;
+      display: inline-block;
+    }
+
+    /* Sombra das Polaroids */
+    .card-polaroid {
+      box-shadow: 0 8px 20px rgba(92, 19, 34, 0.06);
+    }
+
+    /* Ocultar barra de scroll padrão mantendo funcionalidade */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-champagne text-chocolate font-sans min-h-screen relative overflow-x-hidden selection:bg-rosacha/50">
+
+  <!-- Container de Corações Flutuantes -->
+  <div id="hearts-container" class="fixed inset-0 pointer-events-none z-30"></div>
+
+  <!-- GATE DE ENTRADA (Tela de Boas-vindas para destravar Autoplay) -->
+  <div id="gate-screen" class="fixed inset-0 z-50 bg-champagne flex flex-col justify-center items-center px-6 text-center fade-transition">
+    <!-- Padrão decorativo sutil de fundo -->
+    <div class="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#5c1322_1px,transparent_1px)] [background-size:16px_16px]"></div>
+    
+    <div class="max-w-md space-y-8 z-10">
+      <div class="space-y-3">
+        <span class="font-serif text-dourado tracking-[0.2em] uppercase text-xs">23 de Maio</span>
+        <h1 class="font-serif text-bordo text-4xl sm:text-5xl font-semibold leading-tight">Um Presente para Bianca</h1>
+        <p class="font-manuscrita text-chocolate/80 text-2xl mt-2">Feito com todo o amor do mundo</p>
+      </div>
+
+      <!-- Coração Pulsante Principal -->
+      <div class="flex justify-center py-4">
+        <div class="relative w-24 h-24 flex items-center justify-center animate-pulse-slow">
+          <svg viewBox="0 0 32 29.6" class="w-20 h-20 text-rosacha fill-current drop-shadow-md">
+            <path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2
+            c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z"/>
+          </svg>
+          <span class="absolute text-bordo font-manuscrita text-3xl font-bold pb-2">21</span>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <button id="btn-enter" class="px-8 py-3.5 bg-bordo hover:bg-bordo/95 text-champagne font-medium rounded-full shadow-lg shadow-bordo/20 hover:scale-105 active:scale-95 transition-all duration-300 tracking-wide text-sm flex items-center gap-2 mx-auto">
+          <span>Abrir meu Presente</span>
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </button>
+        <p class="text-xs text-chocolate/50 font-light italic">Recomendado ativar o som do seu celular</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTEÚDO PRINCIPAL (Exibido após o Gate) -->
+  <div id="main-content" class="hidden opacity-0 transition-opacity duration-1000 max-w-4xl mx-auto px-6 pt-12 pb-32 space-y-16">
+    
+    <!-- Cabeçalho Principal -->
+    <header class="text-center space-y-3 py-6">
+      <div class="flex justify-center items-center gap-2 text-dourado">
+        <span class="h-[1px] w-8 bg-dourado/50"></span>
+        <span class="font-serif tracking-[0.25em] text-xs uppercase">Parabéns Meu Amor</span>
+        <span class="h-[1px] w-8 bg-dourado/50"></span>
+      </div>
+      <h2 class="font-serif text-bordo text-4xl sm:text-5xl font-semibold leading-tight">Bianca Rayssa</h2>
+      <p class="font-manuscrita text-dourado text-3xl">21 Anos de pura luz e beleza</p>
+    </header>
+
+    <!-- SEÇÃO 1: CARTA ROMÂNTICA & ENVELOPE -->
+    <section class="flex flex-col items-center space-y-8 py-4 relative">
+      <div class="text-center max-w-md space-y-2">
+        <h3 class="font-serif text-bordo text-xl font-medium">Uma Carta de Amor</h3>
+        <p class="text-xs text-chocolate/70 font-light">Toque no lacre de coração para abrir e ler</p>
+      </div>
+
+      <!-- Container do Envelope -->
+      <div class="envelope-wrapper py-6">
+        <div id="envelope-container" class="envelope cursor-pointer transform hover:scale-102 active:scale-98 transition-all duration-300 relative">
+          <!-- Aba Superior (Dobra) -->
+          <div id="envelope-flap" class="envelope-flap"></div>
+          
+          <!-- Folha de Papel Interna -->
+          <div id="letter-paper" class="letter-paper flex flex-col">
+            <!-- Botão de Fechar Carta -->
+            <button id="btn-close-letter" class="absolute top-3 right-3 text-chocolate/40 hover:text-bordo p-1 focus:outline-none transition-colors" title="Fechar Carta">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+
+            <!-- Cabeçalho da Carta -->
+            <div class="border-b border-dourado/30 pb-2 mb-3 pr-8 flex items-center justify-between">
+              <span class="font-serif text-xs text-dourado/80 tracking-widest uppercase">Para: Bianca Rayssa</span>
+              <span class="font-serif text-[10px] text-chocolate/50 italic">23/05/2026</span>
+            </div>
+
+            <!-- Conteúdo do Texto com Scroll e Efeito Typing -->
+            <div id="letter-content" class="flex-1 overflow-y-auto no-scrollbar font-serif text-sm text-chocolate/90 leading-relaxed pr-1 whitespace-pre-wrap select-text text-justify">
+              <div id="typed-text" class="typed-cursor after:animate-pulse"></div>
+            </div>
+          </div>
+
+          <!-- Bolso Frontal do Envelope -->
+          <div class="envelope-pocket"></div>
+
+          <!-- Lacre de Coração -->
+          <div id="envelope-seal" class="absolute top-[85px] left-[130px] w-8 h-8 bg-bordo rounded-full flex items-center justify-center shadow-md shadow-bordo/30 z-40 transition-transform duration-300 hover:scale-110 active:scale-90">
+            <svg viewBox="0 0 32 29.6" class="w-4 h-4 text-champagne fill-current">
+              <path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2
+              c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 2: ESPAÇO DEDICADO AO IURI -->
+    <section class="bg-alabaster rounded-2xl border border-rosacha/20 p-6 sm:p-8 space-y-6 shadow-sm">
+      <div class="text-center space-y-2">
+        <span class="font-manuscrita text-dourado text-3xl">Nosso Pequeno Milagre</span>
+        <h3 class="font-serif text-bordo text-2xl font-semibold">O Fruto do Nosso Amor</h3>
+        <p class="font-sans text-xs text-chocolate/60 font-light max-w-sm mx-auto">
+          A chegada do Iuri transformou nossas vidas, multiplicando o nosso amor e enchendo nossos dias de sorrisos.
+        </p>
+      </div>
+
+      <!-- Destaque do Iuri com Polaroid Especial -->
+      <div class="flex flex-col md:flex-row items-center justify-center gap-8 py-4">
+        <!-- Polaroid do Iuri -->
+        <div class="card-polaroid bg-champagne p-3 pb-6 shadow-md rounded-sm border border-rosacha/20 transform -rotate-2 hover:rotate-0 hover:scale-102 transition-all duration-300 w-full max-w-[260px]">
+          <div class="relative overflow-hidden aspect-square bg-neutral-100 rounded-sm mb-3">
+            <img src="fotos/iuri/20251220_232859 - Copia.jpg" 
+                 alt="Iuri e a mamãe" 
+                 class="w-full h-full object-cover"
+                 loading="lazy"
+                 onerror="this.onerror=null; this.src='https://placehold.co/400x400/FFF9F2/5C1322?text=Iuri+❤️';">
+          </div>
+          <p class="font-manuscrita text-chocolate text-center text-lg leading-tight mt-2 select-none">Mãe de menino, meu maior orgulho!</p>
+        </div>
+
+        <!-- Texto Emotivo -->
+        <div class="flex-1 max-w-md space-y-4 text-chocolate/80 text-sm leading-relaxed text-justify">
+          <p>
+            Ver você com o Iuri no colo é a cena mais linda que eu poderia presenciar. O carinho nos seus olhos, a paciência em cada detalhe e a força com que você assumiu a maternidade me dão a certeza de que você é a melhor mãe que nosso filho poderia ter.
+          </p>
+          <p class="italic text-bordo font-medium font-serif text-center md:text-left text-base">
+            "O amor não se divide, ele se multiplica."
+          </p>
+          <p>
+            O Iuri veio para coroar a nossa jornada. Cada risada dele e cada nova descoberta é um pedaço do nosso futuro sendo construído com muito carinho, respeito e união. Nós amamos você infinitamente, mamãe!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 3: GALERIA POLAROID COM ABAS -->
+    <section class="space-y-8">
+      <div class="text-center space-y-2">
+        <span class="font-serif tracking-widest text-xs uppercase text-dourado">Galeria de Memórias</span>
+        <h3 class="font-serif text-bordo text-3xl font-semibold">Nossa Cápsula do Tempo</h3>
+        <p class="text-xs text-chocolate/70 font-light">Navegue pelas abas para reviver nossos momentos favoritos</p>
+      </div>
+
+      <!-- Abas da Galeria -->
+      <div class="flex justify-center border-b border-rosacha/20 pb-1 overflow-x-auto no-scrollbar scroll-smooth gap-2 sm:gap-6 text-sm">
+        <button data-tab="sozinha" class="gallery-tab px-3 py-2 border-b-2 border-bordo text-bordo font-semibold transition-all duration-300">
+          Bianca
+        </button>
+        <button data-tab="comigo-ivan" class="gallery-tab px-3 py-2 border-b-2 border-transparent text-chocolate/60 hover:text-chocolate transition-all duration-300 whitespace-nowrap">
+          Nós Dois
+        </button>
+        <button data-tab="zuadas" class="gallery-tab px-3 py-2 border-b-2 border-transparent text-chocolate/60 hover:text-chocolate transition-all duration-300">
+          Divertidas
+        </button>
+        <button data-tab="iuri" class="gallery-tab px-3 py-2 border-b-2 border-transparent text-chocolate/60 hover:text-chocolate transition-all duration-300 whitespace-nowrap">
+          Nosso Iuri
+        </button>
+      </div>
+
+      <!-- Grid de Polaroids -->
+      <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 py-4 justify-items-center">
+        <!-- Injetado dinamicamente via Javascript -->
+      </div>
+    </section>
+
+    <!-- Rodapé Emotivo -->
+    <footer class="text-center space-y-4 py-8 border-t border-rosacha/10">
+      <div class="flex justify-center items-center gap-1.5 text-bordo">
+        <svg viewBox="0 0 32 29.6" class="w-4 h-4 fill-current">
+          <path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2
+          c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z"/>
+        </svg>
+        <span class="font-manuscrita text-2xl font-bold">Ivan, Bianca & Iuri</span>
+      </div>
+      <p class="text-xs text-chocolate/40 font-light">Para todo o sempre. Feliz Aniversário, meu amor! ❤️</p>
+    </footer>
+
+  </div>
+
+  <!-- PLAYER DE MÚSICA FLUTUANTE PERSISTENTE -->
+  <div id="audio-player-bar" class="fixed bottom-4 left-4 right-4 z-40 bg-champagne/95 backdrop-blur-md border border-rosacha/20 rounded-full py-2.5 px-4 shadow-xl flex items-center justify-between gap-4 max-w-lg mx-auto transform translate-y-24 transition-transform duration-700 ease-out select-none">
+    
+    <!-- Disco de Vinil Giratório & Detalhes da Música -->
+    <div class="flex items-center gap-3 overflow-hidden">
+      <!-- Disco -->
+      <div id="player-record-disc" class="w-10 h-10 rounded-full bg-neutral-900 border-2 border-dourado/60 flex items-center justify-center shadow-inner relative flex-shrink-0">
+        <!-- Centro do Disco -->
+        <div class="w-3.5 h-3.5 rounded-full bg-dourado flex items-center justify-center">
+          <svg class="w-2.5 h-2.5 text-bordo" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+          </svg>
+        </div>
+      </div>
+      
+      <!-- Detalhes da Música (Marquee no celular se longo) -->
+      <div class="flex flex-col min-w-0">
+        <span id="player-track-title" class="font-serif text-bordo text-sm font-semibold truncate">Veludo Marrom</span>
+        <span id="player-track-artist" class="text-chocolate/60 text-[10px] truncate">Liniker</span>
+      </div>
+    </div>
+
+    <!-- Controles do Player -->
+    <div class="flex items-center gap-2">
+      <!-- Play/Pause -->
+      <button id="player-play-pause" class="w-9 h-9 rounded-full bg-bordo hover:bg-bordo/95 flex items-center justify-center text-champagne focus:outline-none shadow-md shadow-bordo/20 hover:scale-105 active:scale-95 transition-all">
+        <span id="play-pause-icon">
+          <!-- Play Inicial -->
+          <svg class="w-5 h-5 text-champagne translate-x-0.5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+        </span>
+      </button>
+
+      <!-- Avançar -->
+      <button id="player-next" class="w-8 h-8 rounded-full bg-rosacha hover:bg-rosacha/90 flex items-center justify-center text-bordo focus:outline-none hover:scale-105 active:scale-95 transition-all" title="Próxima Música">
+        <svg class="w-4 h-4 text-bordo" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX MODAL (Zoom de Imagens) -->
+  <div id="lightbox-modal" class="fixed inset-0 z-50 bg-bordo/95 backdrop-blur-sm hidden justify-center items-center p-4 transition-all duration-300">
+    <div class="lightbox-overlay absolute inset-0"></div>
+    
+    <!-- Polaroid Ampliada -->
+    <div class="card-polaroid bg-alabaster p-3 pb-8 shadow-2xl rounded-sm border border-rosacha/20 max-w-sm w-full mx-auto relative z-10 animate-fade-in-up">
+      <!-- Botão Fechar Lightbox -->
+      <button id="btn-close-lightbox" class="absolute top-2 right-2 bg-bordo/80 hover:bg-bordo text-champagne rounded-full p-1.5 focus:outline-none transition-colors shadow-md z-20">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+
+      <!-- Imagem Ampliada -->
+      <div class="relative overflow-hidden aspect-square bg-neutral-100 rounded-sm mb-4">
+        <img id="lightbox-img" src="" alt="Imagem ampliada" class="w-full h-full object-cover">
+      </div>
+      
+      <!-- Legenda Manuscrita -->
+      <p id="lightbox-caption" class="font-manuscrita text-chocolate text-center text-2xl leading-tight px-2 select-text"></p>
+    </div>
+  </div>
+
+  <!-- JavaScript Modular -->
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

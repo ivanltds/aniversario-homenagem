@@ -1,0 +1,9 @@
+# Ignorar pastas de agentes e desenvolvimento no deploy da Vercel
+.gemini/
+docs/
+test/
+*.md
+bootstrap-agents.ps1
+package.json
+package-lock.json
+node_modules/
