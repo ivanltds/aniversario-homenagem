@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wireframe Interativo — Bianca 21 Anos</title>
+    <!-- Tailwind CSS para estruturação rápida e responsiva -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cormorant Garamond, Inter, Caveat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        champagne: '#FDFBF7',
+                        alabaster: '#FFF9F2',
+                        rosacha: '#F2C6C2',
+                        dourado: '#C99A5C',
+                        bordo: '#5C1322',
+                        chocolate: '#3A2422'
+                    },
+                    fontFamily: {
+                        serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        hand: ['Caveat', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Estilos personalizados & micro-animações */
+        body {
+            background-color: #FDFBF7;
+            color: #3A2422;
+            overflow-x: hidden;
+        }
+
+        /* Corações flutuantes */
+        .heart-particle {
+            position: absolute;
+            bottom: -50px;
+            pointer-events: none;
+            animation: floatUp 8s linear infinite;
+            opacity: 0;
+            color: #F2C6C2;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(var(--random-x, 50px)) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Efeito de abertura do envelope 3D */
+        .envelope-container {
+            perspective: 1000px;
+            width: 320px;
+            height: 220px;
+        }
+
+        .envelope {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: #F2C6C2; /* Rosa Chá */
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(92, 19, 34, 0.15);
+            transform-style: preserve-3d;
+            transition: transform 0.8s ease;
+        }
+
+        /* Aba superior triangular */
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-top: 110px solid #e5b3af; /* Tom ligeiramente mais escuro para profundidade */
+            transform-origin: top;
+            transition: transform 0.6s ease 0.2s, z-index 0.2s ease 0.4s;
+            z-index: 3;
+        }
+
+        /* Laterais e fundo do envelope */
+        .envelope-pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f7d2cf 0%, #F2C6C2 100%);
+            border-radius: 0 0 8px 8px;
+            z-index: 2;
+            /* Recorte simulado das abas laterais */
+            clip-path: polygon(0 0, 160px 110px, 320px 0, 320px 220px, 0 220px);
+        }
+
+        /* A folha da carta dentro */
+        .envelope-letter {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            width: 300px;
+            height: 190px;
+            background-color: #FFF9F2;
+            border: 1px solid #C99A5C;
+            border-radius: 4px;
+            padding: 15px;
+            box-sizing: border-box;
+            z-index: 1;
+            transition: transform 0.8s ease 0.5s, height 0.8s ease 0.5s, bottom 0.8s ease 0.5s;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Lacre de coração */
+        .envelope-seal {
+            position: absolute;
+            top: 90px;
+            left: 145px;
+            width: 30px;
+            height: 30px;
+            background-color: #5C1322;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 4;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            animation: pulseHeart 2s infinite;
+            transition: opacity 0.3s ease;
+        }
+
+        @keyframes pulseHeart {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        /* Estado Aberto */
+        .envelope-container.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 0;
+        }
+
+        .envelope-container.open .envelope-letter {
+            transform: translateY(-160px);
+            height: 480px;
+            bottom: -240px;
+            z-index: 10;
+            box-shadow: 0 15px 35px rgba(92, 19, 34, 0.15);
+            overflow-y: auto;
+        }
+
+        .envelope-container.open .envelope-seal {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Polaroid style cards */
+        .polaroid-card {
+            background-color: #FFF9F2;
+            box-shadow: 0 6px 18px rgba(92, 19, 34, 0.06);
+            border-radius: 4px;
+            padding: 12px 12px 28px 12px;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+        }
+
+        .polaroid-card:hover {
+            transform: translateY(-8px) scale(1.02) !important;
+            box-shadow: 0 15px 30px rgba(92, 19, 34, 0.12);
+            z-index: 10;
+        }
+
+        /* Classes de rotação aleatória */
+        .rot-l-1 { transform: rotate(-1.5deg); }
+        .rot-r-1 { transform: rotate(1.5deg); }
+        .rot-l-2 { transform: rotate(-3deg); }
+        .rot-r-2 { transform: rotate(2.5deg); }
+
+        /* Esconder barra de rolagem mas manter funcionamento */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased text-chocolate leading-relaxed">
+
+    <!-- 1. TELA DE INGRESSO (GATE DE ÁUDIO) -->
+    <div id="gate-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-champagne px-6 text-center transition-all duration-1000">
+        <!-- Partículas de Corações no Fundo -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none" id="gate-hearts"></div>
+        
+        <div class="z-10 max-w-md space-y-8">
+            <span class="inline-block text-xs uppercase tracking-widest text-dourado font-medium">Homenagem Especial</span>
+            <h1 class="font-serif text-4xl sm:text-5xl text-bordo font-semibold leading-tight">
+                Para Bianca Rayssa,<br>com amor.
+            </h1>
+            <p class="font-sans text-sm text-chocolate/80 px-4">
+                Preparamos uma cápsula de memórias e sentimentos para celebrar a sua chegada aos 21 anos. Recomendamos ativar o som para a experiência completa.
+            </p>
+            <div class="pt-4">
+                <button id="btn-enter" class="relative group bg-bordo text-champagne font-medium py-4 px-10 rounded-full shadow-lg shadow-bordo/25 hover:bg-bordo/90 transition-all duration-300 transform active:scale-95 overflow-hidden">
+                    <span class="relative z-10 font-serif text-lg tracking-wider flex items-center justify-center gap-2">
+                        Abrir seu Presente
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 animate-pulse">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                        </svg>
+                    </span>
+                    <span class="absolute inset-0 bg-dourado transform scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500 opacity-20"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PÁGINA PRINCIPAL (Oculta até o clique do botão entrar) -->
+    <div id="main-content" class="opacity-0 transition-opacity duration-1000 hidden pb-32">
+        
+        <!-- Fundo de Corações Flutuantes Geral -->
+        <div class="fixed inset-0 overflow-hidden pointer-events-none z-0" id="global-hearts"></div>
+
+        <!-- HEADER / HERO -->
+        <header class="relative pt-12 pb-8 px-6 text-center max-w-2xl mx-auto z-10">
+            <span class="text-sm font-medium uppercase tracking-widest text-dourado">25 de Maio de 2026</span>
+            <h2 class="font-serif text-5xl sm:text-6xl text-bordo font-bold mt-2 leading-none">Bianca Rayssa</h2>
+            <p class="font-serif italic text-lg text-chocolate/75 mt-2">Feliz Aniversário de 21 Anos!</p>
+            <div class="w-16 h-[1px] bg-dourado/50 mx-auto mt-6"></div>
+        </header>
+
+        <!-- SEÇÃO 1: A CARTA ROMÂNTICA (ENVELOPE INTERATIVO) -->
+        <section class="py-12 px-6 flex flex-col items-center justify-center relative z-10 max-w-lg mx-auto">
+            <h3 class="font-serif text-2xl text-bordo mb-6 text-center">Uma mensagem para o seu dia...</h3>
+            
+            <!-- Container do Envelope -->
+            <div id="envelope-wrapper" class="envelope-container flex items-center justify-center">
+                <div class="envelope" id="envelope-elem">
+                    <!-- Aba Superior -->
+                    <div class="envelope-flap"></div>
+                    <!-- Bolso Interno -->
+                    <div class="envelope-pocket"></div>
+                    
+                    <!-- Lacre de Coração -->
+                    <div class="envelope-seal" id="envelope-seal-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-rosacha">
+                            <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+                        </svg>
+                    </div>
+
+                    <!-- Folha da Carta -->
+                    <div class="envelope-letter no-scrollbar" id="letter-content">
+                        <!-- Conteúdo com scroll interno se o texto for grande -->
+                        <div class="font-sans text-sm text-chocolate space-y-4 pt-2">
+                            <p class="font-serif italic font-semibold text-bordo text-base">Minha querida Bianca,</p>
+                            <!-- Texto que será "digitado" via JS -->
+                            <div id="typing-box" class="space-y-4 text-chocolate/90 leading-relaxed text-[13px] md:text-sm">
+                                <p>Hoje é um dia incrivelmente especial. Você completa 21 anos, e eu não poderia deixar de celebrar a pessoa incrível, generosa e forte que você se tornou.</p>
+                                <p>Olho para trás e vejo tudo o que construímos e as memórias que compartilhamos. Cada risada espontânea, cada desafio superado e, acima de tudo, o maior e mais lindo fruto da nossa jornada: o nosso querido Iuri.</p>
+                                <p>Você é uma mãe extraordinária, dedicada e amorosa, e me enche de orgulho ver o seu amadurecimento a cada dia. Este site é apenas um pequeno pedaço de carinho para demonstrar o quanto você é amada e importante para nós.</p>
+                                <p>Aproveite cada segundo do seu dia. Você merece toda a felicidade do mundo. Parabéns pelo seu aniversário!</p>
+                            </div>
+                            <p class="font-hand text-right text-bordo text-2xl pt-4">Com todo meu amor, Ivan</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <p id="envelope-tip" class="text-xs text-chocolate/60 mt-4 italic animate-pulse">Toque no selo de coração para abrir a carta.</p>
+            <p id="envelope-close-tip" class="text-xs text-bordo mt-4 italic hidden cursor-pointer hover:underline" onclick="closeLetter()">Toque aqui para fechar a carta.</p>
+        </section>
+
+        <!-- SEÇÃO 2: GALERIA DE MEMÓRIAS (ABAS DE FOTOS POLAROID) -->
+        <section class="py-12 px-6 max-w-4xl mx-auto z-10 relative">
+            <div class="text-center mb-8">
+                <span class="text-xs font-semibold uppercase tracking-wider text-dourado">Nossos Momentos</span>
+                <h3 class="font-serif text-3xl text-bordo font-bold mt-1">Mural de Lembranças</h3>
+                <p class="text-sm text-chocolate/70">Navegue pelas abas para reviver nossas memórias.</p>
+            </div>
+
+            <!-- Abas Categorizadas -->
+            <div class="flex justify-center border-b border-bordo/10 mb-8 overflow-x-auto no-scrollbar scroll-smooth gap-1">
+                <button onclick="switchTab('sozinha')" id="tab-sozinha" class="tab-btn px-4 py-2 text-sm font-medium border-b-2 border-bordo text-bordo transition-all focus:outline-none whitespace-nowrap">
+                    Sozinha (Você)
+                </button>
+                <button onclick="switchTab('comigo-ivan')" id="tab-comigo-ivan" class="tab-btn px-4 py-2 text-sm font-medium border-b-2 border-transparent text-chocolate/60 hover:text-bordo transition-all focus:outline-none whitespace-nowrap">
+                    Nós Dois
+                </button>
+                <button onclick="switchTab('zuadas')" id="tab-zuadas" class="tab-btn px-4 py-2 text-sm font-medium border-b-2 border-transparent text-chocolate/60 hover:text-bordo transition-all focus:outline-none whitespace-nowrap">
+                    Zuadas
+                </button>
+                <button onclick="switchTab('iuri')" id="tab-iuri" class="tab-btn px-4 py-2 text-sm font-medium border-b-2 border-transparent text-chocolate/60 hover:text-bordo transition-all focus:outline-none whitespace-nowrap">
+                    Nosso Iuri
+                </button>
+            </div>
+
+            <!-- Grid de Fotos Polaroid -->
+            <div id="photos-grid" class="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 justify-items-center">
+                <!-- Inserido dinamicamente via JS -->
+            </div>
+        </section>
+
+        <!-- SEÇÃO 3: O ESPAÇO DO IURI (DEDICADO) -->
+        <section class="py-16 px-6 bg-alabaster border-y border-bordo/5 relative z-10 overflow-hidden">
+            <!-- Corações especiais ao fundo -->
+            <div class="absolute inset-0 opacity-15 pointer-events-none select-none flex items-center justify-around font-serif text-9xl text-bordo">
+                <span>❀</span>
+                <span>✿</span>
+            </div>
+
+            <div class="max-w-2xl mx-auto text-center space-y-6 relative z-10">
+                <span class="inline-block text-xs font-semibold uppercase tracking-wider text-dourado bg-rosacha/20 px-3 py-1 rounded-full">O nosso maior tesouro</span>
+                <h3 class="font-serif text-4xl text-bordo font-bold">O Espaço do Iuri</h3>
+                <p class="font-sans text-sm text-chocolate/80 max-w-lg mx-auto leading-relaxed">
+                    Ser mãe aos 20 e poucos anos trouxe responsabilidades e um amor indescritível. Você se revelou uma mãe leoa, carinhosa, que cuida de cada detalhe com um afeto sem fim. Essa seção é dedicada à sua jornada ao lado dele, que preenche nossa vida de sorrisos.
+                </p>
+
+                <!-- Destaque Polaroid Dupla do Iuri -->
+                <div class="flex flex-col sm:flex-row gap-6 justify-center items-center pt-6">
+                    <div class="polaroid-card rot-l-1 max-w-[200px]" onclick="openLightbox('../../../../fotos/iuri/iuri-destaque-1', 'A maior alegria das nossas vidas.')">
+                        <!-- Imagem Placeholder ou real -->
+                        <div class="w-44 h-44 bg-bordo/5 overflow-hidden flex items-center justify-center border border-chocolate/5">
+                            <img id="img-iuri-1" src="../../../../fotos/iuri/placeholder.jpg" alt="Iuri" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x400/FFF9F2/5C1322?text=Iuri+❤️'">
+                        </div>
+                        <p class="font-hand text-center text-bordo text-xl mt-3">Nosso Pequeno Iuri</p>
+                    </div>
+
+                    <div class="polaroid-card rot-r-2 max-w-[200px]" onclick="openLightbox('../../../../fotos/iuri/iuri-destaque-2', 'Seu colo é o melhor lugar do mundo.')">
+                        <div class="w-44 h-44 bg-bordo/5 overflow-hidden flex items-center justify-center border border-chocolate/5">
+                            <img id="img-iuri-2" src="../../../../fotos/iuri/placeholder-2.jpg" alt="Iuri e Mãe" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x400/FFF9F2/5C1322?text=Mãe+e+Filho'">
+                        </div>
+                        <p class="font-hand text-center text-bordo text-xl mt-3">Amor infinito</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 5: ASSINATURA FINAL / FOOTER -->
+        <footer class="py-20 px-6 text-center space-y-4 z-10 relative max-w-md mx-auto">
+            <div class="w-12 h-[1px] bg-dourado/50 mx-auto"></div>
+            <p class="font-serif italic text-lg text-chocolate/80">"De tudo ao meu amor serei atento antes..."</p>
+            
+            <div class="pt-4">
+                <h4 class="font-hand text-bordo text-4xl leading-tight">Com todo o nosso amor,</h4>
+                <p class="font-serif text-xl font-semibold text-dourado mt-1">Ivan &amp; Iuri</p>
+            </div>
+            <p class="text-[10px] text-chocolate/40 uppercase tracking-widest pt-12">Bianca 21 Anos • Feito com amor por Ivan</p>
+        </footer>
+
+    </div>
+
+    <!-- 4. PLAYER DE MÚSICA FLUTUANTE (DOCK INFERIOR) -->
+    <div id="music-player-dock" class="fixed bottom-4 left-4 right-4 z-40 max-w-sm mx-auto bg-champagne/95 backdrop-blur-md border border-bordo/10 rounded-full py-2.5 px-4 shadow-xl shadow-bordo/10 flex items-center justify-between transform translate-y-24 opacity-0 transition-all duration-700">
+        <!-- Áudio elemento invisível -->
+        <audio id="audio-element" loop></audio>
+
+        <div class="flex items-center gap-3 min-w-0 flex-1">
+            <!-- Icone disco rodando -->
+            <div class="relative w-9 h-9 rounded-full bg-bordo/10 flex items-center justify-center text-bordo shrink-0 overflow-hidden" id="player-disk">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 animate-spin-slow">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 9l10.5-3m0 0L21 8.25M19.5 6C19 6 17 7.5 17 8.25m-8 3v6.75m0 0a3 3 0 11-6 0m6 0a3 3 0 11-6 0m15-9a3 3 0 11-6 0m6 0a3 3 0 11-6 0" />
+                </svg>
+            </div>
+            <!-- Detalhe da música ativa -->
+            <div class="min-w-0 flex-1">
+                <p id="track-title" class="text-xs font-semibold text-bordo truncate">Diz Pra Mim (Karaoke)</p>
+                <p id="track-artist" class="text-[10px] text-chocolate/60 truncate">Jean Tassy</p>
+            </div>
+        </div>
+
+        <!-- Controles -->
+        <div class="flex items-center gap-2 shrink-0">
+            <!-- Botão Play/Pause -->
+            <button id="btn-play-pause" class="w-9 h-9 rounded-full bg-bordo text-champagne flex items-center justify-center shadow hover:bg-bordo/90 transition active:scale-95" onclick="togglePlay()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-4 h-4" id="play-icon">
+                    <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653z" clip-rule="evenodd" />
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-4 h-4 hidden" id="pause-icon">
+                    <path fill-rule="evenodd" d="M6.75 5.25a.75.75 0 0 1 .75-.75H9a.75.75 0 0 1 .75.75v13.5a.75.75 0 0 1-.75.75H7.5a.75.75 0 0 1-.75-.75V5.25zm7.5 0A.75.75 0 0 1 15 4.5h1.5a.75.75 0 0 1 .75.75v13.5a.75.75 0 0 1-.75.75H15a.75.75 0 0 1-.75-.75V5.25z" clip-rule="evenodd" />
+                </svg>
+            </button>
+            <!-- Próxima Música -->
+            <button id="btn-next" class="w-8 h-8 rounded-full border border-bordo/10 text-bordo flex items-center justify-center hover:bg-bordo/5 transition active:scale-95" onclick="nextTrack()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+                    <path d="M5.055 7.06c-1.25-.714-2.805.189-2.805 1.628v6.623c0 1.44 1.555 2.342 2.805 1.628l5.83-3.331a1.866 1.866 0 000-3.256L5.055 7.06zM13.805 7.06c-1.25-.714-2.805.189-2.805 1.628v6.623c0 1.44 1.555 2.342 2.805 1.628l5.83-3.331a1.866 1.866 0 000-3.256l-5.83-3.33z" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- 5. LIGHTBOX DE FOTOS (MODAL) -->
+    <div id="lightbox" class="fixed inset-0 z-50 hidden bg-bordo/95 flex flex-col items-center justify-center p-4 transition-all duration-300">
+        <button class="absolute top-6 right-6 text-champagne hover:text-rosacha transition-all text-3xl font-light" onclick="closeLightbox()">&times;</button>
+        <div class="max-w-xl w-full flex flex-col items-center">
+            <div class="bg-alabaster p-3 pb-12 shadow-2xl rounded-sm max-w-sm w-full">
+                <div class="w-full h-80 bg-bordo/5 flex items-center justify-center overflow-hidden">
+                    <img id="lightbox-img" src="" alt="Zoom" class="w-full h-full object-cover">
+                </div>
+                <p id="lightbox-caption" class="font-hand text-center text-bordo text-2xl mt-4 leading-snug">Legenda da Foto</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // LISTA DE MÚSICAS LOCAIS
+        const playlist = [
+            {
+                title: "Diz Pra Mim (Karaoke)",
+                artist: "Jean Tassy",
+                src: "../../../../Jean Tassy Diz Pra Mim Karaoke - Gui Escobar (youtube).mp3"
+            },
+            {
+                title: "Veludo Marrom",
+                artist: "Liniker",
+                src: "../../../../Liniker - Veludo Marrom (Letra) - Mikael Palacio (youtube).mp3"
+            },
+            {
+                title: "Samurai",
+                artist: "Djavan ft. Stevie Wonder",
+                src: "../../../../Djavan - Samurai (Áudio Oficial) ft. Stevie Wonder (1).mp3"
+            }
+        ];
+
+        let currentTrackIdx = 0;
+        const audio = document.getElementById('audio-element');
+        const playIcon = document.getElementById('play-icon');
+        const pauseIcon = document.getElementById('pause-icon');
+        const trackTitle = document.getElementById('track-title');
+        const trackArtist = document.getElementById('track-artist');
+
+        // Configuração Inicial de Áudio
+        function loadTrack(idx) {
+            currentTrackIdx = idx;
+            const track = playlist[idx];
+            audio.src = track.src;
+            trackTitle.innerText = track.title;
+            trackArtist.innerText = track.artist;
+        }
+
+        function togglePlay() {
+            if (audio.paused) {
+                audio.play().then(() => {
+                    playIcon.classList.add('hidden');
+                    pauseIcon.classList.remove('hidden');
+                    document.getElementById('player-disk').classList.add('animate-spin-slow');
+                }).catch(err => {
+                    console.log("Erro ao reproduzir áudio:", err);
+                });
+            } else {
+                audio.pause();
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+                document.getElementById('player-disk').classList.remove('animate-spin-slow');
+            }
+        }
+
+        function nextTrack() {
+            let nextIdx = (currentTrackIdx + 1) % playlist.length;
+            loadTrack(nextIdx);
+            audio.play().then(() => {
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+                document.getElementById('player-disk').classList.add('animate-spin-slow');
+            });
+        }
+
+        // Animação de rotação contínua lenta para o "disco" do player
+        document.write('<style>.animate-spin-slow { animation: spin 8s linear infinite; } @keyframes spin { 100% { transform: rotate(360deg); } }</style>');
+
+        // INGRESSO DO SITE (DESBLOQUEIO)
+        document.getElementById('btn-enter').addEventListener('click', function() {
+            // Desbloqueia e toca música
+            loadTrack(0);
+            
+            // Tenta reproduzir imediatamente
+            audio.play().then(() => {
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            }).catch(e => console.log("Aguardando interação", e));
+
+            // Transição visual
+            const gate = document.getElementById('gate-screen');
+            const main = document.getElementById('main-content');
+            const dock = document.getElementById('music-player-dock');
+
+            gate.classList.add('opacity-0', '-translate-y-full');
+            
+            setTimeout(() => {
+                gate.style.display = 'none';
+                main.classList.remove('hidden');
+                // Força reflow
+                main.offsetHeight;
+                main.classList.remove('opacity-0');
+                main.classList.add('opacity-100');
+                
+                // Exibe player flutuante
+                dock.classList.remove('opacity-0', 'translate-y-24');
+                dock.classList.add('opacity-100', 'translate-y-0');
+                
+                // Inicia corações globais
+                startCorações('global-hearts');
+            }, 800);
+        });
+
+        // ENVELOPE CARTA
+        const envelopeWrapper = document.getElementById('envelope-wrapper');
+        const envelopeSeal = document.getElementById('envelope-seal-btn');
+        const envelopeTip = document.getElementById('envelope-tip');
+        const envelopeCloseTip = document.getElementById('envelope-close-tip');
+        const typingBox = document.getElementById('typing-box');
+        
+        envelopeSeal.addEventListener('click', function(e) {
+            e.stopPropagation();
+            openLetter();
+        });
+        
+        // Também abre clicando no envelope geral
+        envelopeWrapper.addEventListener('click', function() {
+            if(!envelopeWrapper.classList.contains('open')) {
+                openLetter();
+            }
+        });
+
+        function openLetter() {
+            envelopeWrapper.classList.add('open');
+            envelopeTip.classList.add('hidden');
+            setTimeout(() => {
+                envelopeCloseTip.classList.remove('hidden');
+            }, 1000);
+            
+            // Inicia digitação do texto
+            startTypingEffect();
+        }
+
+        function closeLetter() {
+            envelopeWrapper.classList.remove('open');
+            envelopeCloseTip.classList.add('hidden');
+            setTimeout(() => {
+                envelopeTip.classList.remove('hidden');
+            }, 800);
+        }
+
+        // Typing Effect simples
+        let typed = false;
+        function startTypingEffect() {
+            if (typed) return; // Digita apenas uma vez
+            typed = true;
+            
+            const paragraphs = Array.from(typingBox.querySelectorAll('p'));
+            const textNodes = paragraphs.map(p => {
+                const text = p.innerText;
+                p.innerText = ''; // Limpa
+                return { element: p, fullText: text };
+            });
+
+            let currentParagraphIndex = 0;
+            let currentCharIndex = 0;
+            const speed = 25; // ms por caractere
+
+            function type() {
+                if (currentParagraphIndex < textNodes.length) {
+                    const node = textNodes[currentParagraphIndex];
+                    if (currentCharIndex < node.fullText.length) {
+                        node.element.innerText += node.fullText.charAt(currentCharIndex);
+                        currentCharIndex++;
+                        setTimeout(type, speed);
+                    } else {
+                        // Vai para o próximo parágrafo
+                        currentParagraphIndex++;
+                        currentCharIndex = 0;
+                        setTimeout(type, speed * 2);
+                    }
+                }
+            }
+            type();
+        }
+
+        // MURAL DE FOTOS (DADOS & ABAS)
+        // Para o wireframe, fornecemos referências reais e placeholders
+        const photosData = {
+            'sozinha': [
+                {
+                    src: '../../../../fotos/sozinha/20250706_164449.jpg',
+                    caption: "Radiante e linda do jeito que só você sabe ser.",
+                    rotClass: "rot-l-1"
+                },
+                {
+                    src: 'https://placehold.co/400x500/FFF9F2/5C1322?text=Bianca+sozinha',
+                    caption: "Seu sorriso ilumina qualquer lugar.",
+                    rotClass: "rot-r-2"
+                }
+            ],
+            'comigo-ivan': [
+                {
+                    src: '../../../../fotos/comigo-ivan/20250209_183859.jpg',
+                    caption: "Nossos rolês e nosso carinho de sempre.",
+                    rotClass: "rot-l-2"
+                },
+                {
+                    src: '../../../../fotos/comigo-ivan/20250926_220939.jpg',
+                    caption: "Juntinhos construindo uma vida.",
+                    rotClass: "rot-r-1"
+                },
+                {
+                    src: '../../../../fotos/comigo-ivan/20251101_233301.jpg',
+                    caption: "Mais uma foto pro nosso álbum do amor.",
+                    rotClass: "rot-l-1"
+                },
+                {
+                    src: '../../../../fotos/comigo-ivan/20251222_193309.jpg',
+                    caption: "Cumplicidade que aumenta a cada dia.",
+                    rotClass: "rot-r-2"
+                }
+            ],
+            'zuadas': [
+                {
+                    src: 'https://placehold.co/400x500/FFF9F2/5C1322?text=Careta+1',
+                    caption: "Os momentos mais bobos são os mais especiais.",
+                    rotClass: "rot-l-1"
+                },
+                {
+                    src: 'https://placehold.co/400x500/FFF9F2/5C1322?text=Momento+Leve',
+                    caption: "Eu amo cada careta e cada palhaçada.",
+                    rotClass: "rot-r-2"
+                }
+            ],
+            'iuri': [
+                {
+                    src: 'https://placehold.co/400x500/FFF9F2/5C1322?text=Iuri+risadinha',
+                    caption: "A risada que faz qualquer dia cinza clarear.",
+                    rotClass: "rot-r-1"
+                },
+                {
+                    src: 'https://placehold.co/400x500/FFF9F2/5C1322?text=Iuri+abraço',
+                    caption: "Nossa maior felicidade.",
+                    rotClass: "rot-l-2"
+                }
+            ]
+        };
+
+        function switchTab(tabName) {
+            // Atualiza botões de abas
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('border-bordo', 'text-bordo');
+                btn.classList.add('border-transparent', 'text-chocolate/60');
+            });
+            
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            activeBtn.classList.remove('border-transparent', 'text-chocolate/60');
+            activeBtn.classList.add('border-bordo', 'text-bordo');
+
+            // Renderiza fotos da aba
+            renderPhotos(tabName);
+        }
+
+        function renderPhotos(tabName) {
+            const grid = document.getElementById('photos-grid');
+            grid.innerHTML = '';
+            
+            const photos = photosData[tabName] || [];
+            photos.forEach(photo => {
+                const card = document.createElement('div');
+                card.className = `polaroid-card ${photo.rotClass} max-w-[240px] cursor-pointer`;
+                card.setAttribute('onclick', `openLightbox('${photo.src}', '${photo.caption}')`);
+                
+                card.innerHTML = `
+                    <div class="w-full aspect-square bg-bordo/5 overflow-hidden flex items-center justify-center border border-chocolate/5">
+                        <img src="${photo.src}" alt="Memória" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x400/FFF9F2/5C1322?text=Memória+❤️'">
+                    </div>
+                    <p class="font-hand text-center text-bordo text-[15px] mt-3 truncate">${photo.caption}</p>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // LIGHTBOX
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxCaption = document.getElementById('lightbox-caption');
+
+        function openLightbox(src, caption) {
+            lightboxImg.src = src;
+            // Se a imagem falhar ao carregar no lightbox
+            lightboxImg.onerror = function() {
+                this.src = 'https://placehold.co/500x600/FFF9F2/5C1322?text=Memória+da+Bianca+❤️';
+            };
+            lightboxCaption.innerText = caption;
+            lightbox.classList.remove('hidden');
+            lightbox.classList.add('flex');
+            
+            // Travar scroll da página
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.classList.add('hidden');
+            lightbox.classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+
+        // FECHAR LIGHTBOX COM ESC OU CLICANDO FORA
+        lightbox.addEventListener('click', function(e) {
+            if (e.target === lightbox) {
+                closeLightbox();
+            }
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+
+        // GERAÇÃO DE CORAÇÕES FLUTUANTES
+        function startCorações(containerId) {
+            const container = document.getElementById(containerId);
+            const symbols = ['❤️', '💖', '✨', '🌸', '💕'];
+            
+            setInterval(() => {
+                const particle = document.createElement('div');
+                particle.className = 'heart-particle text-sm md:text-base';
+                particle.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                
+                // Posições e tamanhos dinâmicos
+                const startX = Math.random() * 100; // Porcentagem
+                const duration = 5 + Math.random() * 5; // 5s a 10s
+                const delay = Math.random() * 3;
+                const size = 12 + Math.random() * 16; // 12px a 28px
+                const deviation = -100 + Math.random() * 200; // Desvio horizontal
+                
+                particle.style.left = `${startX}%`;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.fontSize = `${size}px`;
+                particle.style.setProperty('--random-x', `${deviation}px`);
+                
+                container.appendChild(particle);
+                
+                // Remove depois de terminar a animação
+                setTimeout(() => {
+                    particle.remove();
+                }, (duration + delay) * 1000);
+            }, 600);
+        }
+
+        // Inicializa com corações na tela de boas-vindas
+        startCorações('gate-hearts');
+        // Renderiza aba inicial de fotos
+        renderPhotos('sozinha');
+
+        // Configuração de fotos reais de Destaque do Iuri
+        // Vamos verificar se as imagens existem nas pastas do Ivan, senão ele vai cair no onerror e mostrar o placeholder.
+        const imgIuri1 = document.getElementById('img-iuri-1');
+        const imgIuri2 = document.getElementById('img-iuri-2');
+        // Para iuri temos que ler a pasta real do Ivan no deploy final. Aqui, se a imagem não existir, ela cai no fallback do HTML.
+    </script>
+</body>
+</html>

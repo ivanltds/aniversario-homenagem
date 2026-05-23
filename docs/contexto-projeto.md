@@ -9,11 +9,11 @@
 
 
 ## Stack
-- Frontend  : n/a
-- Backend   : n/a
+- Frontend  : Vanilla HTML5 / CSS3 Moderno / JS Vanilla (Tailwind CSS CDN)
+- Backend   : n/a (Site Estático)
 - Banco     : n/a
-- Infra     : n/a
-- Testes    : n/a
+- Infra     : Vercel Static Hosting (CDN)
+- Testes    : QA Manual responsivo mobile-first
 
 ## Estrutura de Pastas
 | Pasta                       | Propósito                                  |
@@ -29,7 +29,7 @@
 ## PRDs
 | ID  | Nome | Status   | Fase Atual |
 |-----|------|----------|------------|
-| —   | —    | —        | —          |
+| PRD-001 | PRD Inicial - Surpresa Bianca | Ativo | Deploy / Concluído |
 
 ## Arquivos Registrados
 | Arquivo                                    | Responsável | Descrição                |
@@ -45,10 +45,26 @@
 | .gemini/agents/qa.md                       | Sistema     | QA                       |
 | .gemini/agents/devops.md                   | Sistema     | DevOps                   |
 | docs/contexto-projeto.md                   | Sistema     | Índice central           |
-| docs/arquitetura/arquitetura-atual.md      | Sistema     | Arquitetura              |
-| docs/design-system/design-system.md        | Sistema     | Design system            |
+| docs/arquitetura/arquitetura-atual.md      | Architect   | Estrutura de deploy, controle de áudio e mitigação de riscos |
+| docs/design-system/design-system.md        | UX-UI       | Guia de Design System (Cores, Fontes)    |
+| docs/prd/prd-001/prd-inicial.md            | BA          | PRD Inicial do projeto                   |
+| docs/prd/prd-001/fluxo-ux.md               | UX-UI       | Fluxo e jornada de experiência da Bianca |
+| docs/prd/prd-001/wireframes/index.html     | UX-UI       | Wireframe interativo em HTML + CSS + JS  |
+| docs/prd/prd-001/plano-implementacao-fase-1.md | Architect | Planejamento técnico da stack, passos de execução e failsafes |
+| docs/prd/prd-001/relatorio-qa-fase-1.md    | QA          | Relatório detalhado de validação de qualidade (QA) da Fase 1 |
+| index.html                                 | Dev         | Página principal da experiência interativa (HTML/CSS/JS) |
+| js/player.js                               | Dev         | Estado do player de áudio (TDD) |
+| js/gallery.js                              | Dev         | Estado da galeria com abas (TDD) |
+| js/letter.js                               | Dev         | Estado do envelope e carta 3D (TDD) |
+| js/main.js                                 | Dev         | Orquestrador de interações e efeitos do DOM |
+| test/app.test.js                           | Dev         | Testes unitários de estado (Node.js Test Runner) |
+| .vercelignore                              | Dev         | Exclusão de arquivos de desenvolvimento para o deploy |
+| vercel.json                                | DevOps      | Configuração do Vercel para Clean URLs |
+| docs/deploys/deploy-2026-05-23-prod.md     | DevOps      | Registro de deploy da versão v1.2.0 em produção |
+| git-publish.ps1                            | DevOps      | Script Powershell para automatizar commits e tags locais |
+
 
 ## Última Atualização
-- Data    : 2026-05-08
-- Por     : bootstrap v2
-- Motivo  : inicialização do projeto
+- Data    : 2026-05-23
+- Por     : DevOps
+- Motivo  : Deploy em produção concluído com sucesso (v1.2.0). Criação do arquivo vercel.json, log de deploy e atualização do status no índice.
