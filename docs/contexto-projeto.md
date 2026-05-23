@@ -29,7 +29,7 @@
 ## PRDs
 | ID  | Nome | Status   | Fase Atual |
 |-----|------|----------|------------|
-| PRD-001 | PRD Inicial - Surpresa Bianca | Ativo | Deploy / Concluído |
+| PRD-001 | PRD Inicial - Surpresa Bianca | Ativo | Concluído |
 
 ## Arquivos Registrados
 | Arquivo                                    | Responsável | Descrição                |
@@ -52,19 +52,22 @@
 | docs/prd/prd-001/wireframes/index.html     | UX-UI       | Wireframe interativo em HTML + CSS + JS  |
 | docs/prd/prd-001/plano-implementacao-fase-1.md | Architect | Planejamento técnico da stack, passos de execução e failsafes |
 | docs/prd/prd-001/relatorio-qa-fase-1.md    | QA          | Relatório detalhado de validação de qualidade (QA) da Fase 1 |
+| docs/prd/prd-001/relatorio-qa-fase-2.md    | QA          | Relatório detalhado de validação de qualidade (QA) da Fase 2 (Sakura) |
 | index.html                                 | Dev         | Página principal da experiência interativa (HTML/CSS/JS) |
 | js/player.js                               | Dev         | Estado do player de áudio (TDD) |
 | js/gallery.js                              | Dev         | Estado da galeria com abas (TDD) |
 | js/letter.js                               | Dev         | Estado do envelope e carta 3D (TDD) |
 | js/main.js                                 | Dev         | Orquestrador de interações e efeitos do DOM |
+| js/sakura.js                               | Dev         | Motor de animação de pétalas de cerejeira (sakura) |
 | test/app.test.js                           | Dev         | Testes unitários de estado (Node.js Test Runner) |
 | .vercelignore                              | Dev         | Exclusão de arquivos de desenvolvimento para o deploy |
 | vercel.json                                | DevOps      | Configuração do Vercel para Clean URLs |
 | docs/deploys/deploy-2026-05-23-prod.md     | DevOps      | Registro de deploy da versão v1.2.0 em produção |
+| docs/deploys/deploy-2026-05-23-prod-sakura.md| DevOps    | Registro de deploy da versão v1.3.0 em produção (Sakura) |
 | git-publish.ps1                            | DevOps      | Script Powershell para automatizar commits e tags locais |
 
 
 ## Última Atualização
 - Data    : 2026-05-23
 - Por     : DevOps
-- Motivo  : Deploy em produção concluído com sucesso (v1.2.0). Criação do arquivo vercel.json, log de deploy e atualização do status no índice.
+- Motivo  : Conclusão do PRD-001 (Fase 2) com deploy da v1.3.0 (Refinamento Sakura) em produção na Vercel e registro do log.
