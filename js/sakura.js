@@ -163,14 +163,15 @@ export const SakuraEffect = {
       petal.className = 'sakura-petal';
 
       // Ajustes específicos para a rajada
-      const sizeWidth = Math.random() * 25 + 15; // Pétalas maiores para cobrir mais
+      const sizeWidth = Math.random() * 35 + 20; // Pétalas BEM maiores para garantir bloqueio
       const sizeHeight = sizeWidth * 1.2;
       const duration = Math.random() * 1.5 + 1.2; // Rápido (1.2s a 2.7s)
       const delay = Math.random() * 0.5;
-      const startY = (Math.random() * 120) - 10; // Espalhado pela altura
+      const startY = (Math.random() * 140) - 20; // De -20vh a 120vh
 
       petal.style.width = `${sizeWidth}px`;
       petal.style.height = `${sizeHeight}px`;
+      petal.style.setProperty('--startY', `${startY}vh`);
       
       // Animação de rajada de vento cruzando
       petal.style.animation = `sakura-burst ${duration}s ease-out ${delay}s forwards`;
