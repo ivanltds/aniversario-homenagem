@@ -225,6 +225,11 @@ function setupEventListeners() {
          SakuraEffect.miniBurst(cx, cy, 150, document.body, 100000, true);
       }, 1.8);
 
+      // Rajada de pétalas passando lateralmente para suavizar a transição (2.0s)
+      tl.add(() => {
+         SakuraEffect.burst(150);
+      }, 2.0);
+
       tl.to("#layerOuter, #layerMid, #layerInner", {
         z: -100, duration: 1.2, ease: "power2.inOut"
       }, 1.8)
