@@ -281,7 +281,7 @@ function setupEventListeners() {
   if (btnContinue) {
     btnContinue.addEventListener('click', () => {
       letter.setFlowState('transitioning');
-      SakuraEffect.burst(75);
+      SakuraEffect.burst(300); // Mais pétalas para cobrir a tela inteira
 
       if (typeof gsap !== 'undefined') {
         const tlEnd = gsap.timeline();
@@ -341,13 +341,16 @@ function setupEventListeners() {
 
   const btnCloseGallery = document.getElementById('btn-close-gallery');
   const galleryModal = document.getElementById('gallery-modal');
+  const galleryBg = document.getElementById('gallery-modal-bg');
   const sakuraContainer = document.getElementById('sakura-container');
 
   if (btnCloseGallery && galleryModal) {
     btnCloseGallery.addEventListener('click', () => {
       galleryModal.classList.add('hidden');
       galleryModal.classList.remove('flex');
-      if (sakuraContainer) sakuraContainer.classList.remove('opacity-0');
+      if (galleryBg) galleryBg.classList.add('hidden');
+      // Retorna o z-index original das pétalas
+      if (sakuraContainer) sakuraContainer.style.zIndex = '10';
     });
   }
 
@@ -377,13 +380,12 @@ function setupEventListeners() {
       document.getElementById('letter-modal-text').innerHTML = letterText.replace(/\n/g, '<br>');
       letterModal.classList.remove('hidden');
       letterModal.classList.add('flex');
-      if (sakuraContainer) sakuraContainer.classList.add('opacity-0');
+      if (sakuraContainer) sakuraContainer.style.zIndex = '10';
     });
     
     btnCloseLetterModal.addEventListener('click', () => {
       letterModal.classList.add('hidden');
       letterModal.classList.remove('flex');
-      if (sakuraContainer) sakuraContainer.classList.remove('opacity-0');
     });
   }
 
@@ -392,12 +394,12 @@ function setupEventListeners() {
       if (lightbox) lightbox.classList.add('hidden');
       if (galleryModal) {
         galleryModal.classList.add('hidden');
-        if (sakuraContainer) sakuraContainer.classList.remove('opacity-0');
+        if (galleryBg) galleryBg.classList.add('hidden');
+        if (sakuraContainer) sakuraContainer.style.zIndex = '10';
       }
       if (letterModal) {
         letterModal.classList.add('hidden');
         letterModal.classList.remove('flex');
-        if (sakuraContainer) sakuraContainer.classList.remove('opacity-0');
       }
     }
   });
@@ -541,9 +543,11 @@ function openGalleryModal(category) {
   const modal = document.getElementById('gallery-modal');
   const title = document.getElementById('gallery-modal-title');
   const grid = document.getElementById('gallery-modal-grid');
+  const galleryBg = document.getElementById('gallery-modal-bg');
   const sakuraContainer = document.getElementById('sakura-container');
 
-  if (sakuraContainer) sakuraContainer.classList.add('opacity-0');
+  // Coloca o container de pétalas entre o background escuro (z-30) e as fotos (z-50)
+  if (sakuraContainer) sakuraContainer.style.zIndex = '40';
 
   const categoryTitles = {
     sozinha: 'Ela (Bianca)',

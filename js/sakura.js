@@ -53,17 +53,17 @@ export const SakuraEffect = {
       /* Rajada de vento (Burst) */
       @keyframes sakura-burst {
         0% {
-          transform: translate(-10vw, 50vh) scale(0.3) rotate(0deg);
+          transform: translate(-15vw, var(--startY, 50vh)) scale(0.3) rotate(0deg);
           opacity: 0;
         }
         10% {
-          opacity: 0.9;
+          opacity: 1;
         }
         90% {
-          opacity: 0.9;
+          opacity: 1;
         }
         100% {
-          transform: translate(110vw, -10vh) scale(1.5) rotate(720deg);
+          transform: translate(115vw, calc(var(--startY, 50vh) - 20vh)) scale(2.5) rotate(720deg);
           opacity: 0;
         }
       }
@@ -150,19 +150,24 @@ export const SakuraEffect = {
   },
 
   // Rajada rápida de transição que cruza a tela da esquerda para a direita
-  burst(count = 50) {
+  burst(count = 150) {
     this.injectStyles();
-    const activeContainer = this.container || document.body;
+    
+    // Cria um container exclusivo para a rajada ficar por cima de tudo
+    const burstContainer = document.createElement('div');
+    burstContainer.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; pointer-events: none; overflow: hidden;';
+    document.body.appendChild(burstContainer);
 
     for (let i = 0; i < count; i++) {
       const petal = document.createElement('div');
       petal.className = 'sakura-petal';
 
       // Ajustes específicos para a rajada
-      const sizeWidth = Math.random() * 18 + 10;
+      const sizeWidth = Math.random() * 25 + 15; // Pétalas maiores para cobrir mais
       const sizeHeight = sizeWidth * 1.2;
       const duration = Math.random() * 1.5 + 1.2; // Rápido (1.2s a 2.7s)
       const delay = Math.random() * 0.5;
+      const startY = (Math.random() * 120) - 10; // Espalhado pela altura
 
       petal.style.width = `${sizeWidth}px`;
       petal.style.height = `${sizeHeight}px`;
@@ -173,12 +178,12 @@ export const SakuraEffect = {
       // Tons mais vivos para a transição
       petal.style.background = 'linear-gradient(135deg, #FFD5E5 0%, #FF69B4 100%)';
 
-      activeContainer.appendChild(petal);
-
-      // Remove logo após a conclusão
-      setTimeout(() => {
-        petal.remove();
-      }, (duration + delay) * 1000);
+      burstContainer.appendChild(petal);
     }
+    
+    // Remove o container após o fim da última animação
+    setTimeout(() => {
+      if (burstContainer.parentNode) burstContainer.remove();
+    }, 4000);
   }
 };
