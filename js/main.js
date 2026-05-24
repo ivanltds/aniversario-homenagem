@@ -10,35 +10,7 @@ const playlist = [
   { title: 'Diz Pra Mim', artist: 'Jean Tassy', src: 'audio/jean-tassy-diz-pra-mim.mp3' }
 ];
 
-// Mapeamento das mídias
-const photosData = {
-  sozinha: [
-    { src: 'fotos/sozinha/20250706_164449.jpg', caption: 'A dona do meu sorriso, simplesmente perfeita.' }
-  ],
-  'comigo-ivan': [
-    { src: 'fotos/comigo-ivan/20250209_183859.jpg', caption: 'Mais um dia de sorrisos ao seu lado.' },
-    { src: 'fotos/comigo-ivan/20250926_220939.jpg', caption: 'O melhor lugar do mundo é dentro do seu abraço.' },
-    { src: 'fotos/comigo-ivan/20251101_233301.jpg', caption: 'Cumplicidade e amor que crescem a cada dia.' },
-    { src: 'fotos/comigo-ivan/20251222_193309.jpg', caption: 'Colecionando memórias preciosas com você.' },
-    { src: 'fotos/comigo-ivan/20251224_234002.jpg', caption: 'Nosso Natal repleto de paz, amor e gratidão.' }
-  ],
-  zuadas: [
-    { src: 'fotos/zuadas/20250401_175126.jpg', caption: 'Nossas palhaçadas e risadas soltas.' },
-    { src: 'fotos/zuadas/20250406_081526.jpg', caption: 'Com você, a diversão nunca tem fim.' },
-    { src: 'fotos/zuadas/20250411_185135.jpg', caption: 'Se não for para fazer careta juntos, nem vale!' },
-    { src: 'fotos/zuadas/20250414_192927.jpg', caption: 'O amor também é feito de momentos bobos e alegres.' },
-    { src: 'fotos/zuadas/IMG-20230106-WA0002.jpg', caption: 'A felicidade mora na nossa espontaneidade.' },
-    { src: 'fotos/zuadas/Screenshot_2023-03-07-23-50-38-327_com.google.android.apps.photos.jpg', caption: 'Amo cada detalhe engraçado do nosso dia a dia.' }
-  ],
-  iuri: [
-    { src: 'fotos/iuri/20250713_154623.jpg', caption: 'Nosso pequeno Iuri, o pacotinho de amor mais lindo.' },
-    { src: 'fotos/iuri/20250804_210955.jpg', caption: 'Um olhar puro que trouxe luz para as nossas vidas.' },
-    { src: 'fotos/iuri/20251121_163546.jpg', caption: 'Nosso principezinho crescendo rápido demais.' },
-    { src: 'fotos/iuri/20251220_232859 - Copia.jpg', caption: 'A maior e mais bela prova da nossa união.' },
-    { src: 'fotos/iuri/IMG_20250801_132348_435.jpg', caption: 'O sorrisinho mais gostoso que alegra qualquer dia.' },
-    { src: 'fotos/iuri/Screenshot_20250713_144306_Photos.jpg', caption: 'Nosso pequeno milagre, nossa maior benção.' }
-  ]
-};
+// As fotos da galeria agora são carregadas automaticamente pelo build (GalleryState gerencia isso)
 
 // Imagens selecionadas para o slideshow automático do Hero Banner
 const slideshowImages = [
@@ -67,7 +39,7 @@ Ivan (e o nosso pequeno Iuri) ❤️`;
 
 // Estados
 const player = new PlayerState(playlist);
-const gallery = new GalleryState(photosData);
+const gallery = new GalleryState();
 const letter = new LetterState();
 
 let audioEl = null;
@@ -86,6 +58,9 @@ let isActive = true;
 let floatAnim;
 let xTo;
 let yTo;
+
+let heroIuriInterval = null;
+let galleryIntervals = [];
 
 document.addEventListener('DOMContentLoaded', () => {
   // Inicializa o motor de pétalas caindo continuamente no fundo
@@ -307,6 +282,7 @@ function setupEventListeners() {
 
                 letter.setFlowState('hero');
                 startSlideshow();
+                startHeroIuriFlip(); // Inicia o giro da foto do Iuri
              }, 1.5);
       }
     });
@@ -354,6 +330,10 @@ function setupEventListeners() {
   if (btnCloseGallery && galleryModal) {
     btnCloseGallery.addEventListener('click', () => {
       SakuraEffect.burst(300); // Dispara transição
+      
+      galleryIntervals.forEach(clearInterval);
+      galleryIntervals = [];
+
       setTimeout(() => {
         galleryModal.classList.remove('opacity-100');
         galleryModal.classList.add('opacity-0');
@@ -586,10 +566,12 @@ function openGalleryModal(category) {
   title.textContent = categoryTitles[category] || 'Nossas Lembranças';
   grid.innerHTML = '';
 
-  // Recupera imagens embaralhadas da categoria
-  const randomizedImages = gallery.getRandomizedImages(category);
+  galleryIntervals.forEach(clearInterval);
+  galleryIntervals = [];
 
-  randomizedImages.forEach((img, idx) => {
+  const initialImages = gallery.getInitialGrid(category, 6);
+
+  initialImages.forEach((img, idx) => {
     const rot = rotations[idx % rotations.length];
     const polaroid = document.createElement('div');
     polaroid.className = `card-polaroid bg-alabaster p-3 pb-6 shadow-md rounded-sm border border-rosacha/20 cursor-pointer transform ${rot} hover:rotate-0 hover:scale-105 transition-all duration-300 w-full max-w-[280px]`;
@@ -597,7 +579,7 @@ function openGalleryModal(category) {
     polaroid.innerHTML = `
       <div class="relative overflow-hidden aspect-[4/5] bg-neutral-100 rounded-sm mb-3">
         <img src="${img.src}" 
-             alt="${img.caption}" 
+             alt="Memória" 
              class="w-full h-full object-cover object-top opacity-0 transition-opacity duration-500"
              loading="lazy"
              onload="this.classList.remove('opacity-0')"
@@ -607,10 +589,24 @@ function openGalleryModal(category) {
     `;
 
     polaroid.addEventListener('click', () => {
-      openLightbox(img.src, img.caption);
+      const currentImg = polaroid.querySelector('img');
+      const currentCaption = polaroid.querySelector('p');
+      openLightbox(currentImg.src, currentCaption.textContent);
     });
 
     grid.appendChild(polaroid);
+
+    const randomInterval = Math.floor(Math.random() * (15000 - 6000 + 1) + 6000);
+    const intervalId = setInterval(() => {
+      const currentUrls = Array.from(grid.querySelectorAll('img')).map(img => img.src.split('/').slice(-3).join('/'));
+      const newObj = gallery.getRandomImageObj(category, currentUrls);
+      
+      if (newObj) {
+        flipCard(polaroid, newObj.src, newObj.caption);
+      }
+    }, randomInterval);
+
+    galleryIntervals.push(intervalId);
   });
 
   modal.classList.remove('hidden');
@@ -635,4 +631,48 @@ function openLightbox(src, caption) {
   };
 
   lightbox.classList.remove('hidden');
+}
+
+// ==========================================
+// FUNÇÕES DE FLIP 360 (Giro Dinâmico)
+// ==========================================
+
+function flipCard(cardEl, newImageSrc, newCaption) {
+  if (typeof gsap === 'undefined') return;
+
+  gsap.to(cardEl, {
+    rotationY: 90,
+    duration: 0.4,
+    ease: "power2.in",
+    onComplete: () => {
+      const img = cardEl.querySelector('img');
+      const captionEl = cardEl.querySelector('p');
+      
+      if (img) img.src = newImageSrc;
+      if (captionEl) captionEl.textContent = newCaption;
+
+      gsap.set(cardEl, { rotationY: -90 });
+      gsap.to(cardEl, {
+        rotationY: 0,
+        duration: 0.4,
+        ease: "power2.out"
+      });
+    }
+  });
+}
+
+function startHeroIuriFlip() {
+  if (heroIuriInterval) clearInterval(heroIuriInterval);
+  heroIuriInterval = setInterval(() => {
+    const cardEl = document.getElementById('hero-iuri-polaroid');
+    if (!cardEl) return;
+    
+    const currentImg = document.getElementById('hero-iuri-img');
+    const currentSrc = currentImg ? currentImg.src.split('/').slice(-3).join('/') : null;
+    
+    const newObj = gallery.getRandomImageObj('iuri', currentSrc ? [currentSrc] : []);
+    if (!newObj) return;
+
+    flipCard(cardEl, newObj.src, newObj.caption);
+  }, 8000); // Gira a cada 8 segundos
 }
