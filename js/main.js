@@ -217,6 +217,14 @@ function setupEventListeners() {
         }
       }
 
+      // Explosão colossal (1000 pétalas) no momento do desabrochar (1.8s)
+      tl.add(() => {
+         const rect = flowerWrapper.getBoundingClientRect();
+         const cx = rect.left + rect.width / 2;
+         const cy = rect.top + rect.height / 2;
+         SakuraEffect.miniBurst(cx, cy, 1000, document.body, 100000);
+      }, 1.8);
+
       tl.to("#layerOuter, #layerMid, #layerInner", {
         z: -100, duration: 1.2, ease: "power2.inOut"
       }, 1.8)
