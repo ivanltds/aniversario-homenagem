@@ -189,7 +189,7 @@ export const SakuraEffect = {
   },
 
   // Mini explosão radial (360 graus) a partir de um ponto
-  miniBurst(originX, originY, count = 15) {
+  miniBurst(originX, originY, count = 15, targetParent = document.body, zIndex = 9999) {
     this.injectStyles();
     
     if (!document.getElementById('sakura-miniburst-styles')) {
@@ -211,8 +211,8 @@ export const SakuraEffect = {
     }
 
     const burstContainer = document.createElement('div');
-    burstContainer.style.cssText = `position: fixed; top: ${originY}px; left: ${originX}px; z-index: 9999; pointer-events: none; overflow: visible;`;
-    document.body.appendChild(burstContainer);
+    burstContainer.style.cssText = `position: fixed; top: ${originY}px; left: ${originX}px; z-index: ${zIndex}; pointer-events: none; overflow: visible;`;
+    targetParent.appendChild(burstContainer);
 
     for (let i = 0; i < count; i++) {
       const petal = document.createElement('div');

@@ -640,11 +640,6 @@ function openLightbox(src, caption) {
 function flipCard(cardEl, newImageSrc, newCaption) {
   if (typeof gsap === 'undefined') return;
 
-  const rect = cardEl.getBoundingClientRect();
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
-  SakuraEffect.miniBurst(centerX, centerY, 20);
-
   // Desativa transições CSS que conflitam com o GSAP
   cardEl.classList.remove('transition-all', 'duration-300');
 
@@ -667,8 +662,27 @@ function flipCard(cardEl, newImageSrc, newCaption) {
         duration: 0.4,
         ease: "power2.out",
         onComplete: () => {
-          // Restaura as transições de hover após a animação
           cardEl.classList.add('transition-all', 'duration-300');
+
+          const rect = cardEl.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          
+          // Define contexto de empilhamento para que o burstContainer fique atrás do cardEl
+          const parentContext = cardEl.closest('#gallery-modal, #hero-flow-section') || document.body;
+          
+          const originalZ = cardEl.style.zIndex;
+          const originalPos = cardEl.style.position;
+          cardEl.style.position = 'relative';
+          cardEl.style.zIndex = '50';
+          
+          // 40 pétalas, no parentContext, com z-index 10 (atrás do card que está com 50)
+          SakuraEffect.miniBurst(centerX, centerY, 40, parentContext, 10);
+
+          setTimeout(() => {
+            cardEl.style.zIndex = originalZ;
+            cardEl.style.position = originalPos;
+          }, 1500);
         }
       });
     }
