@@ -162,11 +162,11 @@ export const SakuraEffect = {
       const petal = document.createElement('div');
       petal.className = 'sakura-petal';
 
-      // Ajustes específicos para a rajada (vento lateral) - Agora mais lento e majestoso
+      // Ajustes específicos para a rajada (vento lateral) - Rápido para transição
       const sizeWidth = Math.random() * 35 + 20; 
       const sizeHeight = sizeWidth * 1.2;
-      const duration = Math.random() * 3.0 + 3.0; // 3.0s a 6.0s (bem suave)
-      const delay = Math.random() * 0.8;
+      const duration = Math.random() * 1.5 + 1.2; // Rápido (1.2s a 2.7s)
+      const delay = Math.random() * 0.5;
       const startY = (Math.random() * 140) - 20; // De -20vh a 120vh
 
       petal.style.width = `${sizeWidth}px`;
@@ -185,7 +185,7 @@ export const SakuraEffect = {
     // Remove o container após o fim da última animação
     setTimeout(() => {
       if (burstContainer.parentNode) burstContainer.remove();
-    }, 8000);
+    }, 4000);
   },
 
   // Mini explosão radial (360 graus) a partir de um ponto
