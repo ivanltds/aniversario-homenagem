@@ -143,28 +143,6 @@ function buildGSAPFlower() {
     }
   });
 
-  // 2. Construir o Miolo da Flor (Estames)
-  const centerEl = document.createElement('div');
-  centerEl.id = 'flower-center-core';
-  centerEl.className = 'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[20] pointer-events-none opacity-0';
-  
-  let stamensHTML = '<svg viewBox="0 0 100 100" width="140" height="140">';
-  for (let i = 0; i < 40; i++) {
-    const angle = (i * 9) * Math.PI / 180;
-    const length = 20 + Math.random() * 25;
-    const x2 = 50 + Math.cos(angle) * length;
-    const y2 = 50 + Math.sin(angle) * length;
-    const cx = 50 + Math.cos(angle) * (length + 2);
-    const cy = 50 + Math.sin(angle) * (length + 2);
-    const isGold = Math.random() > 0.4;
-    stamensHTML += `
-      <line x1="50" y1="50" x2="${x2}" y2="${y2}" stroke="${isGold ? '#D4AF37' : '#FF69B4'}" stroke-width="0.8" opacity="0.7" />
-      <circle cx="${cx}" cy="${cy}" r="${1.5 + Math.random() * 1.5}" fill="${isGold ? '#FFD700' : '#800020'}" filter="drop-shadow(0 0 2px rgba(255,215,0,0.5))" />
-    `;
-  }
-  stamensHTML += '</svg>';
-  centerEl.innerHTML = stamensHTML;
-  flowerWrapper.appendChild(centerEl);
 
   if (typeof gsap !== 'undefined') {
     floatAnim = gsap.to(flowerWrapper, {
@@ -260,14 +238,6 @@ function setupEventListeners() {
         }
       });
 
-      // Animação do miolo dourado e bordô (surge de mansinho)
-      tl.to("#flower-center-core", {
-        opacity: 1,
-        scale: 1.2,
-        rotation: 45,
-        duration: 1.5,
-        ease: "power2.out"
-      }, 0.8);
 
       const pollenC = document.getElementById('pollenContainer');
       if (pollenC) {
@@ -299,7 +269,7 @@ function setupEventListeners() {
          SakuraEffect.burst(150);
       }, 2.0);
 
-      tl.to("#layerOuter, #layerMid, #layerInner, #flower-center-core", {
+      tl.to("#layerOuter, #layerMid, #layerInner", {
         opacity: 0, duration: 1.2, ease: "power2.inOut"
       }, 1.8)
       .to("#card", { opacity: 1, duration: 0.6, ease: "power1.out" }, 1.6)
