@@ -74,8 +74,8 @@ let audioEl = null;
 const rotations = ['rotate-1', '-rotate-1', 'rotate-2', '-rotate-2', 'rotate-3', '-rotate-3'];
 let slideshowInterval = null;
 
-const PETAL_FILLS   = ['#F5ECE5','#EDE0D8','#E5D4CB'];
-const PETAL_BACKS   = ['#DDD0C8','#D5C8C0','#CCC0B8'];
+const PETAL_FILLS   = ['#FFD1DC', '#FFC0CB', '#FFB6C1']; // Cores rosas de Sakura
+const PETAL_BACKS   = ['#FFC0CB', '#FFB6C1', '#FF69B4']; // Tons rosas mais escuros para o verso
 const COUNTS = [8, 8, 8];
 const LAYERS = ['layerOuter','layerMid','layerInner'];
 const Z_OFF  = [8, 5, 2];
@@ -117,13 +117,13 @@ function buildGSAPFlower() {
       el.innerHTML = `
         <div class="petal-face front">
           <svg viewBox="0 0 230 230" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:-115px;width:230px;height:230px">
-            <path d="M 115 230 C 55 190,15 140,20 90 C 25 40,80 10,115 5 C 150 10,205 40,210 90 C 215 140,175 190,115 230 Z"
+            <path d="M 115 230 C 55 190,15 140,20 90 C 25 40,80 10,105 20 L 115 35 L 125 20 C 150 10,205 40,210 90 C 215 140,175 190,115 230 Z"
               fill="${fill}" stroke="rgba(0,0,0,0.05)" stroke-width="1"/>
           </svg>
         </div>
         <div class="petal-face back">
           <svg viewBox="0 0 230 230" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:-115px;width:230px;height:230px">
-            <path d="M 115 230 C 55 190,15 140,20 90 C 25 40,80 10,115 5 C 150 10,205 40,210 90 C 215 140,175 190,115 230 Z"
+            <path d="M 115 230 C 55 190,15 140,20 90 C 25 40,80 10,105 20 L 115 35 L 125 20 C 150 10,205 40,210 90 C 215 140,175 190,115 230 Z"
               fill="${back}"/>
           </svg>
         </div>`;
@@ -231,22 +231,25 @@ function setupEventListeners() {
         }
       }
 
-      tl.to("#card", {
+      tl.to("#layerOuter, #layerMid, #layerInner", {
+        z: -100, duration: 1.2, ease: "power2.inOut"
+      }, 1.8)
+      .to("#card", {
         opacity: 1,
-        position: 'fixed', top: '5%', bottom: '5%', left: '5%', right: '5%',
-        width: 'auto', height: 'auto',
-        borderRadius: "8px",
-        y: -20, z: 40,
+        width: '90vw',
+        height: '85vh',
+        borderRadius: "16px",
+        z: 150, // Move a carta bem à frente das pétalas
         duration: 1.2, ease: "expo.inOut"
       }, 1.8)
-      .to("#cardBorder", { borderRadius: "6px", duration: 1.2, ease: "expo.inOut" }, 1.8)
+      .to("#cardBorder", { borderRadius: "12px", duration: 1.2, ease: "expo.inOut" }, 1.8)
       .set("#card", { zIndex: 20 }, 1.9)
       .to("#card", {
-        y: 0, z: 100, scale: 1.08,
+        z: 200, scale: 1.05,
         duration: 1.2, ease: "power3.out"
       }, 3.0)
       .to("#layerOuter, #layerMid, #layerInner", {
-        z: -200, opacity: 0.2, duration: 1.2, ease: "power3.out"
+        z: -300, opacity: 0.2, duration: 1.2, ease: "power3.out"
       }, 3.0)
       .add(() => {
         allPetals.forEach(({ el }, idx) => {
