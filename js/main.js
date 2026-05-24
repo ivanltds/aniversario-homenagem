@@ -333,9 +333,9 @@ function setupEventListeners() {
     btnNext.addEventListener('click', handleNextTrack);
   }
 
-  // 5. Interação das Polaroids (Galeria)
-  document.querySelectorAll('.polaroid-card').forEach(card => {
-    card.addEventListener('click', (e) => {
+  // 5. Interação das Galerias
+  document.querySelectorAll('.category-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
       const category = e.currentTarget.dataset.category;
       if (category) {
         SakuraEffect.burst(300); // Dispara a transição
