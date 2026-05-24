@@ -162,11 +162,11 @@ export const SakuraEffect = {
       const petal = document.createElement('div');
       petal.className = 'sakura-petal';
 
-      // Ajustes específicos para a rajada
-      const sizeWidth = Math.random() * 35 + 20; // Pétalas BEM maiores para garantir bloqueio
+      // Ajustes específicos para a rajada (vento lateral) - Agora mais lento e majestoso
+      const sizeWidth = Math.random() * 35 + 20; 
       const sizeHeight = sizeWidth * 1.2;
-      const duration = Math.random() * 1.5 + 1.2; // Rápido (1.2s a 2.7s)
-      const delay = Math.random() * 0.5;
+      const duration = Math.random() * 3.0 + 3.0; // 3.0s a 6.0s (bem suave)
+      const delay = Math.random() * 0.8;
       const startY = (Math.random() * 140) - 20; // De -20vh a 120vh
 
       petal.style.width = `${sizeWidth}px`;
@@ -185,7 +185,7 @@ export const SakuraEffect = {
     // Remove o container após o fim da última animação
     setTimeout(() => {
       if (burstContainer.parentNode) burstContainer.remove();
-    }, 4000);
+    }, 8000);
   },
 
   // Mini explosão radial (360 graus) a partir de um ponto
@@ -220,7 +220,7 @@ export const SakuraEffect = {
 
       const sizeWidth = isMega ? (Math.random() * 60 + 40) : (Math.random() * 15 + 10);
       const sizeHeight = sizeWidth * 1.2;
-      const duration = isMega ? (Math.random() * 1.5 + 1.5) : (Math.random() * 0.6 + 0.5); 
+      const duration = isMega ? (Math.random() * 3.0 + 2.5) : (Math.random() * 0.8 + 0.6); // Explosão mais lenta e flutuante
       
       const angle = Math.random() * Math.PI * 2;
       const distance = isMega ? (Math.random() * 1000 + 400) : (Math.random() * 150 + 80);
@@ -245,6 +245,6 @@ export const SakuraEffect = {
     
     setTimeout(() => {
       if (burstContainer.parentNode) burstContainer.remove();
-    }, isMega ? 4000 : 1500);
+    }, isMega ? 7000 : 2500);
   }
 };
