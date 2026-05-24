@@ -331,7 +331,7 @@ function setupEventListeners() {
     btnCloseGallery.addEventListener('click', () => {
       SakuraEffect.burst(300); // Dispara transição
       
-      galleryIntervals.forEach(clearInterval);
+      galleryIntervals.forEach(clearTimeout);
       galleryIntervals = [];
 
       setTimeout(() => {
@@ -566,7 +566,7 @@ function openGalleryModal(category) {
   title.textContent = categoryTitles[category] || 'Nossas Lembranças';
   grid.innerHTML = '';
 
-  galleryIntervals.forEach(clearInterval);
+  galleryIntervals.forEach(clearTimeout);
   galleryIntervals = [];
 
   const initialImages = gallery.getInitialGrid(category, 6);
@@ -596,17 +596,33 @@ function openGalleryModal(category) {
 
     grid.appendChild(polaroid);
 
-    const randomInterval = Math.floor(Math.random() * (15000 - 6000 + 1) + 6000);
-    const intervalId = setInterval(() => {
-      const currentUrls = Array.from(grid.querySelectorAll('img')).map(img => img.src.split('/').slice(-3).join('/'));
-      const newObj = gallery.getRandomImageObj(category, currentUrls);
-      
-      if (newObj) {
-        flipCard(polaroid, newObj.src, newObj.caption);
+    function scheduleNextFlip(isInitial = false) {
+      // Se for initial com sorteio de 50%, gira quase de imediato (0.8s a 2s)
+      // Senão, o intervalo normal é entre 2s e 5s
+      let randomDelay;
+      if (isInitial && Math.random() > 0.5) {
+        randomDelay = Math.floor(Math.random() * 1200) + 800;
+      } else {
+        randomDelay = Math.floor(Math.random() * (5000 - 2000 + 1) + 2000);
       }
-    }, randomInterval);
 
-    galleryIntervals.push(intervalId);
+      const timeoutId = setTimeout(() => {
+        const currentUrls = Array.from(grid.querySelectorAll('img')).map(img => img.src.split('/').slice(-3).join('/'));
+        const newObj = gallery.getRandomImageObj(category, currentUrls);
+        
+        if (newObj) {
+          flipCard(polaroid, newObj.src, newObj.caption);
+        }
+        
+        // Agenda o próximo após girar
+        scheduleNextFlip();
+      }, randomDelay);
+
+      galleryIntervals.push(timeoutId);
+    }
+
+    // Inicia o ciclo para esta foto (flag isInitial = true)
+    scheduleNextFlip(true);
   });
 
   modal.classList.remove('hidden');
