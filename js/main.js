@@ -78,28 +78,64 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function buildGSAPFlower() {
+  const flowerWrapper = document.getElementById('flowerWrapper');
+  if (!flowerWrapper) return;
+
+  // 1. Injetar Definições SVG (Gradientes e Sombras)
+  const defsEl = document.createElement('div');
+  defsEl.innerHTML = `
+    <svg width="0" height="0" style="position:absolute">
+      <defs>
+        <!-- Gradientes Orgânicos -->
+        <linearGradient id="petal-grad-outer" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#FFF0F5" />
+          <stop offset="40%" stop-color="#FFB6C1" />
+          <stop offset="100%" stop-color="#DB7093" />
+        </linearGradient>
+        <linearGradient id="petal-grad-mid" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#FFE4E1" />
+          <stop offset="50%" stop-color="#FF69B4" />
+          <stop offset="100%" stop-color="#C71585" />
+        </linearGradient>
+        <linearGradient id="petal-grad-inner" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#FFC0CB" />
+          <stop offset="60%" stop-color="#FF1493" />
+          <stop offset="100%" stop-color="#8B0050" /> <!-- Tom Bordô profundo na base -->
+        </linearGradient>
+        <!-- Sombra 3D -->
+        <filter id="petal-shadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#5C1322" flood-opacity="0.15"/>
+        </filter>
+      </defs>
+    </svg>
+  `;
+  document.body.appendChild(defsEl);
+
+  const GRADS = ['url(#petal-grad-outer)', 'url(#petal-grad-mid)', 'url(#petal-grad-inner)'];
+  // Path anatômico de uma flor de cerejeira com fenda (cleft)
+  const sakuraPath = "M 115 230 C 90 190, 40 150, 25 105 C 10 50, 60 10, 105 35 Q 115 40, 115 55 Q 115 40, 125 35 C 170 10, 220 50, 205 105 C 190 150, 140 190, 115 230 Z";
+
   LAYERS.forEach((lid, li) => {
     const container = document.getElementById(lid);
     if (!container) return;
-    const fill = PETAL_FILLS[li];
-    const back = PETAL_BACKS[li];
+    
     for (let i = 0; i < COUNTS[li]; i++) {
       const angle = A_OFF[li] + (360 / COUNTS[li]) * i;
       const el = document.createElement('div');
       el.className = 'petal';
       el.id = `${lid}_p${i}`;
-      el.style.cssText = `transform: translateX(-50%) rotate(${angle}deg) translateZ(${Z_OFF[li]}px); z-index: ${10 - li};`;
+      el.style.cssText = `transform: translateX(-50%) rotate(${angle}deg) translateZ(${Z_OFF[li]}px); z-index: ${15 - li};`;
+      
+      // O front usa o gradiente da camada, o verso usa uma cor levemente mais escura simulando translucidez
       el.innerHTML = `
         <div class="petal-face front">
           <svg viewBox="0 0 230 230" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:-115px;width:230px;height:230px">
-            <path d="M 115 230 C 55 190,15 140,20 90 C 25 40,80 10,105 20 L 115 35 L 125 20 C 150 10,205 40,210 90 C 215 140,175 190,115 230 Z"
-              fill="${fill}" stroke="rgba(0,0,0,0.05)" stroke-width="1"/>
+            <path d="${sakuraPath}" fill="${GRADS[li]}" filter="url(#petal-shadow)" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
           </svg>
         </div>
         <div class="petal-face back">
           <svg viewBox="0 0 230 230" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:-115px;width:230px;height:230px">
-            <path d="M 115 230 C 55 190,15 140,20 90 C 25 40,80 10,105 20 L 115 35 L 125 20 C 150 10,205 40,210 90 C 215 140,175 190,115 230 Z"
-              fill="${back}"/>
+            <path d="${sakuraPath}" fill="${PETAL_BACKS[li]}" filter="url(#petal-shadow)"/>
           </svg>
         </div>`;
       container.appendChild(el);
@@ -107,8 +143,30 @@ function buildGSAPFlower() {
     }
   });
 
-  const flowerWrapper = document.getElementById('flowerWrapper');
-  if (flowerWrapper && typeof gsap !== 'undefined') {
+  // 2. Construir o Miolo da Flor (Estames)
+  const centerEl = document.createElement('div');
+  centerEl.id = 'flower-center-core';
+  centerEl.className = 'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[20] pointer-events-none opacity-0';
+  
+  let stamensHTML = '<svg viewBox="0 0 100 100" width="140" height="140">';
+  for (let i = 0; i < 40; i++) {
+    const angle = (i * 9) * Math.PI / 180;
+    const length = 20 + Math.random() * 25;
+    const x2 = 50 + Math.cos(angle) * length;
+    const y2 = 50 + Math.sin(angle) * length;
+    const cx = 50 + Math.cos(angle) * (length + 2);
+    const cy = 50 + Math.sin(angle) * (length + 2);
+    const isGold = Math.random() > 0.4;
+    stamensHTML += `
+      <line x1="50" y1="50" x2="${x2}" y2="${y2}" stroke="${isGold ? '#D4AF37' : '#FF69B4'}" stroke-width="0.8" opacity="0.7" />
+      <circle cx="${cx}" cy="${cy}" r="${1.5 + Math.random() * 1.5}" fill="${isGold ? '#FFD700' : '#800020'}" filter="drop-shadow(0 0 2px rgba(255,215,0,0.5))" />
+    `;
+  }
+  stamensHTML += '</svg>';
+  centerEl.innerHTML = stamensHTML;
+  flowerWrapper.appendChild(centerEl);
+
+  if (typeof gsap !== 'undefined') {
     floatAnim = gsap.to(flowerWrapper, {
       y: 12, duration: 3, ease: "sine.inOut", yoyo: true, repeat: -1
     });
@@ -179,26 +237,36 @@ function setupEventListeners() {
 
       LAYERS.forEach((lid, li) => {
         const count  = COUNTS[li];
-        const startT = 0.3 + li * 0.15;
+        const startT = 0.3 + li * 0.2; // Aumentar stagger entre camadas para dar tempo de "respirar"
 
         for (let i = 0; i < count; i++) {
           const el = document.getElementById(`${lid}_p${i}`);
           if (!el) continue;
           tl.to(el, {
-            rotateX:  -160,
-            skewY:    (i % 2 === 0 ? 6 : -6),
-            duration: 1.3,
-            ease: "power2.inOut",
-          }, startT + i * 0.04)
-          .set(el, { zIndex: 1 }, startT + i * 0.04 + 0.65)
+            rotateX:  -130 - (li * 15), // Curvatura aumenta nas pétalas internas
+            scale: 1.15,
+            skewY:    (i % 2 === 0 ? 8 : -8),
+            duration: 1.5,
+            ease: "power3.inOut",
+          }, startT + i * 0.05)
+          .set(el, { zIndex: 1 }, startT + i * 0.05 + 0.75)
           .to(el, {
             skewY: 0,
-            rotateX: -165,
-            duration: 0.6,
-            ease: "elastic.out(1, 0.5)"
-          }, startT + i * 0.04 + 1.3);
+            rotateX: -145 - (li * 10),
+            duration: 0.8,
+            ease: "elastic.out(1, 0.4)"
+          }, startT + i * 0.05 + 1.5);
         }
       });
+
+      // Animação do miolo dourado e bordô (surge de mansinho)
+      tl.to("#flower-center-core", {
+        opacity: 1,
+        scale: 1.2,
+        rotation: 45,
+        duration: 1.5,
+        ease: "power2.out"
+      }, 0.8);
 
       const pollenC = document.getElementById('pollenContainer');
       if (pollenC) {
@@ -230,8 +298,8 @@ function setupEventListeners() {
          SakuraEffect.burst(150);
       }, 2.0);
 
-      tl.to("#layerOuter, #layerMid, #layerInner", {
-        z: -100, duration: 1.2, ease: "power2.inOut"
+      tl.to("#layerOuter, #layerMid, #layerInner, #flower-center-core", {
+        z: -100, opacity: 0, duration: 1.2, ease: "power2.inOut"
       }, 1.8)
       .to("#card", { opacity: 1, duration: 0.6, ease: "power1.out" }, 1.6)
       .to("#card", {
