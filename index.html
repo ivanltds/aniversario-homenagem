@@ -112,7 +112,7 @@
 <body class="bg-champagne text-chocolate font-sans min-h-screen relative overflow-x-hidden selection:bg-rosacha/50">
 
   <!-- Container de Pétalas de Cerejeira (Chuva Constante) -->
-  <div id="sakura-container" class="fixed inset-0 pointer-events-none z-10"></div>
+  <div id="sakura-container" class="fixed inset-0 pointer-events-none z-[9999]"></div>
 
   <!-- TELA INICIAL: FLOR DE CEREJEIRA (GATE & CARTA) -->
   <div id="scene-section" class="fixed inset-0 flex flex-col justify-center items-center z-20 pointer-events-none">
@@ -239,7 +239,7 @@
       </div>
 
       <!-- Destaque do Iuri -->
-      <div class="flex flex-col md:flex-row items-center justify-center gap-8 py-4">
+      <div class="flex flex-col md:flex-row items-center justify-center gap-8 py-4 relative">
         <!-- Polaroid do Iuri -->
         <div id="hero-iuri-polaroid" class="card-polaroid bg-champagne p-3 pb-6 shadow-md rounded-sm border border-rosacha/20 transform -rotate-2 hover:rotate-0 hover:scale-102 transition-all duration-300 w-full max-w-[265px] flex-shrink-0">
           <div class="relative overflow-hidden aspect-[4/5] bg-neutral-100 rounded-sm mb-3">
@@ -336,7 +336,7 @@
     </div>
 
     <!-- Container Grid de Polaroids Dinâmico -->
-    <div id="gallery-modal-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 py-8 justify-items-center flex-1 w-full max-w-4xl mx-auto">
+    <div id="gallery-modal-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 py-8 justify-items-center flex-1 w-full max-w-4xl mx-auto relative">
       <!-- Injetado dinamicamente via Javascript em ordem aleatória -->
     </div>
   </div>

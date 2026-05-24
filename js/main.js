@@ -341,7 +341,6 @@ function setupEventListeners() {
           galleryModal.classList.add('hidden');
           galleryModal.classList.remove('flex');
           if (galleryBg) galleryBg.classList.add('hidden');
-          if (sakuraContainer) sakuraContainer.style.zIndex = '10';
         }, 500); // Tempo do fade out
       }, 800); // Espera as pétalas cobrirem a tela
     });
@@ -379,7 +378,6 @@ function setupEventListeners() {
           letterModal.classList.remove('opacity-0');
           letterModal.classList.add('opacity-100');
         }, 50);
-        if (sakuraContainer) sakuraContainer.style.zIndex = '10';
       }, 800);
     });
     
@@ -402,7 +400,6 @@ function setupEventListeners() {
       if (galleryModal) {
         galleryModal.classList.add('hidden');
         if (galleryBg) galleryBg.classList.add('hidden');
-        if (sakuraContainer) sakuraContainer.style.zIndex = '10';
       }
       if (letterModal) {
         letterModal.classList.add('hidden');
@@ -553,9 +550,6 @@ function openGalleryModal(category) {
   const galleryBg = document.getElementById('gallery-modal-bg');
   const sakuraContainer = document.getElementById('sakura-container');
 
-  // Coloca o container de pétalas entre o background escuro (z-30) e as fotos (z-50)
-  if (sakuraContainer) sakuraContainer.style.zIndex = '40';
-
   const categoryTitles = {
     sozinha: 'Ela (Bianca)',
     'comigo-ivan': 'Nós Dois',
@@ -680,8 +674,7 @@ function flipCard(cardEl, newImageSrc, newCaption) {
         onComplete: () => {
           cardEl.classList.add('transition-all', 'duration-300');
 
-          const parentContext = cardEl.parentElement;
-          parentContext.style.position = 'relative'; // Garante o referencial
+          const parentContext = cardEl.closest('#gallery-modal') || cardEl.closest('#hero-flow-section');
           
           const rect = cardEl.getBoundingClientRect();
           const parentRect = parentContext.getBoundingClientRect();
