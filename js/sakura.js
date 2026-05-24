@@ -186,5 +186,64 @@ export const SakuraEffect = {
     setTimeout(() => {
       if (burstContainer.parentNode) burstContainer.remove();
     }, 4000);
+  },
+
+  // Mini explosão radial (360 graus) a partir de um ponto
+  miniBurst(originX, originY, count = 15) {
+    this.injectStyles();
+    
+    if (!document.getElementById('sakura-miniburst-styles')) {
+      const style = document.createElement('style');
+      style.id = 'sakura-miniburst-styles';
+      style.textContent = `
+        @keyframes sakura-miniburst {
+          0% {
+            transform: translate(0, 0) scale(0.2) rotate(0deg);
+            opacity: 1;
+          }
+          100% {
+            transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(var(--rot));
+            opacity: 0;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    const burstContainer = document.createElement('div');
+    burstContainer.style.cssText = `position: fixed; top: ${originY}px; left: ${originX}px; z-index: 9999; pointer-events: none; overflow: visible;`;
+    document.body.appendChild(burstContainer);
+
+    for (let i = 0; i < count; i++) {
+      const petal = document.createElement('div');
+      petal.className = 'sakura-petal';
+
+      const sizeWidth = Math.random() * 15 + 10;
+      const sizeHeight = sizeWidth * 1.2;
+      const duration = Math.random() * 0.6 + 0.5; // 0.5 a 1.1s
+      
+      const angle = Math.random() * Math.PI * 2;
+      const distance = Math.random() * 150 + 80;
+      const tx = Math.cos(angle) * distance;
+      const ty = Math.sin(angle) * distance;
+      const rot = (Math.random() - 0.5) * 720;
+
+      petal.style.width = `${sizeWidth}px`;
+      petal.style.height = `${sizeHeight}px`;
+      petal.style.left = '0';
+      petal.style.top = '0';
+      petal.style.setProperty('--tx', `${tx}px`);
+      petal.style.setProperty('--ty', `${ty}px`);
+      petal.style.setProperty('--rot', `${rot}deg`);
+      
+      petal.style.animation = `sakura-miniburst ${duration}s cubic-bezier(0.25, 1, 0.5, 1) forwards`;
+      petal.style.background = 'linear-gradient(135deg, #FFD5E5 0%, #FF69B4 100%)';
+
+      burstContainer.appendChild(petal);
+    }
+    
+    setTimeout(() => {
+      if (burstContainer.parentNode) burstContainer.remove();
+    }, 1500);
   }
 };

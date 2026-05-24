@@ -640,6 +640,11 @@ function openLightbox(src, caption) {
 function flipCard(cardEl, newImageSrc, newCaption) {
   if (typeof gsap === 'undefined') return;
 
+  const rect = cardEl.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+  SakuraEffect.miniBurst(centerX, centerY, 20);
+
   // Desativa transições CSS que conflitam com o GSAP
   cardEl.classList.remove('transition-all', 'duration-300');
 
