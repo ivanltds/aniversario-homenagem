@@ -339,7 +339,9 @@ function setupEventListeners() {
       const category = e.currentTarget.dataset.category;
       if (category) {
         SakuraEffect.burst(300); // Dispara a transição
-        openGalleryModal(category);
+        setTimeout(() => {
+          openGalleryModal(category);
+        }, 800); // Espera as pétalas cobrirem a tela
       }
     });
   });
@@ -351,11 +353,17 @@ function setupEventListeners() {
 
   if (btnCloseGallery && galleryModal) {
     btnCloseGallery.addEventListener('click', () => {
-      galleryModal.classList.add('hidden');
-      galleryModal.classList.remove('flex');
-      if (galleryBg) galleryBg.classList.add('hidden');
-      // Retorna o z-index original das pétalas
-      if (sakuraContainer) sakuraContainer.style.zIndex = '10';
+      SakuraEffect.burst(300); // Dispara transição
+      setTimeout(() => {
+        galleryModal.classList.remove('opacity-100');
+        galleryModal.classList.add('opacity-0');
+        setTimeout(() => {
+          galleryModal.classList.add('hidden');
+          galleryModal.classList.remove('flex');
+          if (galleryBg) galleryBg.classList.add('hidden');
+          if (sakuraContainer) sakuraContainer.style.zIndex = '10';
+        }, 500); // Tempo do fade out
+      }, 800); // Espera as pétalas cobrirem a tela
     });
   }
 
@@ -383,16 +391,27 @@ function setupEventListeners() {
   if (btnReread && letterModal && btnCloseLetterModal) {
     btnReread.addEventListener('click', () => {
       SakuraEffect.burst(300); // Dispara a transição
-      document.getElementById('letter-modal-text').innerHTML = letterText.replace(/\n/g, '<br>');
-      letterModal.classList.remove('hidden');
-      letterModal.classList.add('flex');
-      if (sakuraContainer) sakuraContainer.style.zIndex = '10';
+      setTimeout(() => {
+        document.getElementById('letter-modal-text').innerHTML = letterText.replace(/\n/g, '<br>');
+        letterModal.classList.remove('hidden');
+        letterModal.classList.add('flex');
+        void letterModal.offsetWidth; // Força reflow para o transition funcionar
+        letterModal.classList.remove('opacity-0');
+        letterModal.classList.add('opacity-100');
+        if (sakuraContainer) sakuraContainer.style.zIndex = '10';
+      }, 800);
     });
     
     btnCloseLetterModal.addEventListener('click', () => {
       SakuraEffect.burst(300); // Dispara a transição ao fechar
-      letterModal.classList.add('hidden');
-      letterModal.classList.remove('flex');
+      setTimeout(() => {
+        letterModal.classList.remove('opacity-100');
+        letterModal.classList.add('opacity-0');
+        setTimeout(() => {
+          letterModal.classList.add('hidden');
+          letterModal.classList.remove('flex');
+        }, 500);
+      }, 800);
     });
   }
 
@@ -595,6 +614,9 @@ function openGalleryModal(category) {
 
   modal.classList.remove('hidden');
   modal.classList.add('flex');
+  void modal.offsetWidth; // Força reflow
+  modal.classList.remove('opacity-0');
+  modal.classList.add('opacity-100');
 }
 
 function openLightbox(src, caption) {
