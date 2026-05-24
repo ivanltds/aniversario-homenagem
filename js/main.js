@@ -159,9 +159,20 @@ function setupEventListeners() {
         btnSkip.addEventListener('click', () => {
           tl.progress(1);
           btnSkip.classList.add('hidden');
+          // Interrompe qualquer digitação em andamento instantaneamente
+          if (typeof globalTypingTimeout !== 'undefined') clearTimeout(globalTypingTimeout);
+          gsap.killTweensOf(document.getElementById('typed-text'));
           if (!letter.isTyped) startTypingEffect(true);
         }, { once: true });
       }
+
+      // Explosão de pétalas inicial
+      tl.add(() => {
+         const rect = flowerWrapper.getBoundingClientRect();
+         const cx = rect.left + rect.width / 2;
+         const cy = rect.top + rect.height / 2;
+         SakuraEffect.miniBurst(cx, cy, 100, document.body, 100000);
+      }, 0.2);
 
       tl.to(flowerWrapper, { scale: 1.06, duration: 0.3, ease: "power1.out" }, 0)
         .to(flowerWrapper, { scale: 1,    duration: 0.3, ease: "power1.in" },  0.3);
@@ -471,15 +482,28 @@ function updatePlayerUI() {
   }
 }
 
+let globalTypingTimeout = null;
+
 function startTypingEffect(instant = false) {
   const textContainer = document.getElementById('typed-text');
   const btnSkip = document.getElementById('btn-skip-intro');
+  const letterContent = document.getElementById('letter-content');
+  
+  if (globalTypingTimeout) clearTimeout(globalTypingTimeout);
+  gsap.killTweensOf(textContainer);
+
   textContainer.innerHTML = '';
   
   if (instant) {
+    textContainer.className = 'typed-cursor'; // Restaura a fonte
+    textContainer.style.opacity = '1';
+    
+    if (letterContent) letterContent.classList.remove('flex', 'flex-col', 'justify-center', 'items-center');
+    
     textContainer.innerHTML = letterText.replace(/\n/g, '<br>');
     letter.setTyped(true);
     textContainer.classList.remove('after:animate-pulse');
+    
     const continueContainer = document.getElementById('continue-action-container');
     if(continueContainer) {
       continueContainer.classList.remove('opacity-0');
@@ -489,39 +513,65 @@ function startTypingEffect(instant = false) {
     return;
   }
 
+  // Fase 1: Feliz Aniversário cursivo
+  textContainer.className = 'typed-cursor font-manuscrita text-4xl sm:text-5xl text-bordo text-center w-full';
+  if (letterContent) letterContent.classList.add('flex', 'flex-col', 'justify-center', 'items-center');
+
+  const introText = "Feliz aniversário Bianca !";
   let i = 0;
-  const speed = 25; // ms por caractere
-  const characters = Array.from(letterText);
 
-  function type() {
-    if (i < characters.length) {
-      const char = characters[i];
-      if (char === '\n') {
-        textContainer.innerHTML += '<br>';
-      } else {
-        textContainer.innerHTML += char;
-      }
+  function typeIntro() {
+    if (i < introText.length) {
+      textContainer.innerHTML += introText[i];
       i++;
-
-      const letterContent = document.getElementById('letter-content');
-      if(letterContent) letterContent.scrollTop = letterContent.scrollHeight;
-
-      setTimeout(type, speed);
+      globalTypingTimeout = setTimeout(typeIntro, 80);
     } else {
-      letter.setTyped(true);
-      textContainer.classList.remove('after:animate-pulse');
-      
-      // Revela o botão de continuar de forma suave e oculta o de pular
-      const continueContainer = document.getElementById('continue-action-container');
-      if(continueContainer) {
-        continueContainer.classList.remove('opacity-0');
-        continueContainer.classList.add('opacity-100');
-      }
-      if (btnSkip) btnSkip.classList.add('hidden');
+      globalTypingTimeout = setTimeout(() => {
+        gsap.to(textContainer, { opacity: 0, duration: 0.8, onComplete: () => {
+          textContainer.innerHTML = '';
+          textContainer.className = 'typed-cursor';
+          gsap.set(textContainer, { opacity: 1 });
+          if (letterContent) letterContent.classList.remove('flex', 'flex-col', 'justify-center', 'items-center');
+          startMainTyping();
+        }});
+      }, 1500);
     }
   }
 
-  type();
+  function startMainTyping() {
+    let j = 0;
+    const speed = 25; // ms por caractere
+    const chars = Array.from(letterText);
+
+    function typeMain() {
+      if (j < chars.length) {
+        const char = chars[j];
+        if (char === '\n') {
+          textContainer.innerHTML += '<br>';
+        } else {
+          textContainer.innerHTML += char;
+        }
+        j++;
+
+        if (letterContent) letterContent.scrollTop = letterContent.scrollHeight;
+
+        globalTypingTimeout = setTimeout(typeMain, speed);
+      } else {
+        letter.setTyped(true);
+        textContainer.classList.remove('after:animate-pulse');
+        
+        const continueContainer = document.getElementById('continue-action-container');
+        if(continueContainer) {
+          continueContainer.classList.remove('opacity-0');
+          continueContainer.classList.add('opacity-100');
+        }
+        if (btnSkip) btnSkip.classList.add('hidden');
+      }
+    }
+    typeMain();
+  }
+
+  typeIntro();
 }
 
 // Constrói o HTML inicial do Slideshow do Hero Banner
