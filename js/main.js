@@ -333,12 +333,14 @@ function setupEventListeners() {
     btnNext.addEventListener('click', handleNextTrack);
   }
 
-  // 5. Botões de Acesso às Galerias Dinâmicas (Modal Randômico)
-  const categoryButtons = document.querySelectorAll('.category-btn');
-  categoryButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const categoryName = btn.dataset.category;
-      openGalleryModal(categoryName);
+  // 5. Interação das Polaroids (Galeria)
+  document.querySelectorAll('.polaroid-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      const category = e.currentTarget.dataset.category;
+      if (category) {
+        SakuraEffect.burst(300); // Dispara a transição
+        openGalleryModal(category);
+      }
     });
   });
 
@@ -380,6 +382,7 @@ function setupEventListeners() {
   
   if (btnReread && letterModal && btnCloseLetterModal) {
     btnReread.addEventListener('click', () => {
+      SakuraEffect.burst(300); // Dispara a transição
       document.getElementById('letter-modal-text').innerHTML = letterText.replace(/\n/g, '<br>');
       letterModal.classList.remove('hidden');
       letterModal.classList.add('flex');
