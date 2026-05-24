@@ -395,9 +395,10 @@ function setupEventListeners() {
         document.getElementById('letter-modal-text').innerHTML = letterText.replace(/\n/g, '<br>');
         letterModal.classList.remove('hidden');
         letterModal.classList.add('flex');
-        void letterModal.offsetWidth; // Força reflow para o transition funcionar
-        letterModal.classList.remove('opacity-0');
-        letterModal.classList.add('opacity-100');
+        setTimeout(() => {
+          letterModal.classList.remove('opacity-0');
+          letterModal.classList.add('opacity-100');
+        }, 50);
         if (sakuraContainer) sakuraContainer.style.zIndex = '10';
       }, 800);
     });
@@ -614,9 +615,10 @@ function openGalleryModal(category) {
 
   modal.classList.remove('hidden');
   modal.classList.add('flex');
-  void modal.offsetWidth; // Força reflow
-  modal.classList.remove('opacity-0');
-  modal.classList.add('opacity-100');
+  setTimeout(() => {
+    modal.classList.remove('opacity-0');
+    modal.classList.add('opacity-100');
+  }, 50);
 }
 
 function openLightbox(src, caption) {
