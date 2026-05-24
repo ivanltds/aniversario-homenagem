@@ -390,6 +390,7 @@ function setupEventListeners() {
     });
     
     btnCloseLetterModal.addEventListener('click', () => {
+      SakuraEffect.burst(300); // Dispara a transição ao fechar
       letterModal.classList.add('hidden');
       letterModal.classList.remove('flex');
     });
