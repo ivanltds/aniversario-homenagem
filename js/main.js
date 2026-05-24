@@ -683,8 +683,11 @@ function flipCard(cardEl, newImageSrc, newCaption) {
           const parentContext = cardEl.parentElement;
           parentContext.style.position = 'relative'; // Garante o referencial
           
-          const centerX = cardEl.offsetLeft + cardEl.offsetWidth / 2;
-          const centerY = cardEl.offsetTop + cardEl.offsetHeight / 2;
+          const rect = cardEl.getBoundingClientRect();
+          const parentRect = parentContext.getBoundingClientRect();
+          
+          const centerX = (rect.left - parentRect.left) + rect.width / 2;
+          const centerY = (rect.top - parentRect.top) + rect.height / 2;
           
           const originalZ = cardEl.style.zIndex;
           const originalPos = cardEl.style.position;
