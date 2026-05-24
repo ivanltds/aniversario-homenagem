@@ -640,8 +640,12 @@ function openLightbox(src, caption) {
 function flipCard(cardEl, newImageSrc, newCaption) {
   if (typeof gsap === 'undefined') return;
 
+  // Desativa transições CSS que conflitam com o GSAP
+  cardEl.classList.remove('transition-all', 'duration-300');
+
   gsap.to(cardEl, {
     rotationY: 90,
+    transformPerspective: 1000,
     duration: 0.4,
     ease: "power2.in",
     onComplete: () => {
@@ -654,8 +658,13 @@ function flipCard(cardEl, newImageSrc, newCaption) {
       gsap.set(cardEl, { rotationY: -90 });
       gsap.to(cardEl, {
         rotationY: 0,
+        transformPerspective: 1000,
         duration: 0.4,
-        ease: "power2.out"
+        ease: "power2.out",
+        onComplete: () => {
+          // Restaura as transições de hover após a animação
+          cardEl.classList.add('transition-all', 'duration-300');
+        }
       });
     }
   });
