@@ -50,7 +50,7 @@ const slideshowImages = [
 ];
 
 // Texto da carta
-const letterText = `Minha linda Bianca Rayssa Gonçalves dos Santos,
+const letterText = `Minha linda Bianca,
 
 Hoje você completa 21 anos, e eu não poderia deixar de celebrar a mulher incrível, forte e iluminada que você se tornou. Desde que você entrou na minha vida, tudo ganhou mais cor, mais sentido e um brilho especial que só você tem.
 
@@ -74,6 +74,19 @@ let audioEl = null;
 const rotations = ['rotate-1', '-rotate-1', 'rotate-2', '-rotate-2', 'rotate-3', '-rotate-3'];
 let slideshowInterval = null;
 
+const PETAL_FILLS   = ['#F5ECE5','#EDE0D8','#E5D4CB'];
+const PETAL_BACKS   = ['#DDD0C8','#D5C8C0','#CCC0B8'];
+const COUNTS = [8, 8, 8];
+const LAYERS = ['layerOuter','layerMid','layerInner'];
+const Z_OFF  = [8, 5, 2];
+const A_OFF  = [0, 22.5, 45];
+const allPetals = [];
+
+let isActive = true;
+let floatAnim;
+let xTo;
+let yTo;
+
 document.addEventListener('DOMContentLoaded', () => {
   // Inicializa o motor de pétalas caindo continuamente no fundo
   SakuraEffect.start(document.getElementById('sakura-container'));
@@ -84,124 +97,238 @@ document.addEventListener('DOMContentLoaded', () => {
   audioEl.volume = 0.7;
   audioEl.addEventListener('ended', handleNextTrack);
 
+  buildGSAPFlower();
   setupEventListeners();
   buildSlideshow();
 });
 
+function buildGSAPFlower() {
+  LAYERS.forEach((lid, li) => {
+    const container = document.getElementById(lid);
+    if (!container) return;
+    const fill = PETAL_FILLS[li];
+    const back = PETAL_BACKS[li];
+    for (let i = 0; i < COUNTS[li]; i++) {
+      const angle = A_OFF[li] + (360 / COUNTS[li]) * i;
+      const el = document.createElement('div');
+      el.className = 'petal';
+      el.id = `${lid}_p${i}`;
+      el.style.cssText = `transform: translateX(-50%) rotate(${angle}deg) translateZ(${Z_OFF[li]}px); z-index: ${10 - li};`;
+      el.innerHTML = `
+        <div class="petal-face front">
+          <svg viewBox="0 0 230 230" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:-115px;width:230px;height:230px">
+            <path d="M 115 230 C 55 190,15 140,20 90 C 25 40,80 10,115 5 C 150 10,205 40,210 90 C 215 140,175 190,115 230 Z"
+              fill="${fill}" stroke="rgba(0,0,0,0.05)" stroke-width="1"/>
+          </svg>
+        </div>
+        <div class="petal-face back">
+          <svg viewBox="0 0 230 230" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:-115px;width:230px;height:230px">
+            <path d="M 115 230 C 55 190,15 140,20 90 C 25 40,80 10,115 5 C 150 10,205 40,210 90 C 215 140,175 190,115 230 Z"
+              fill="${back}"/>
+          </svg>
+        </div>`;
+      container.appendChild(el);
+      allPetals.push({ el, angle });
+    }
+  });
+
+  const flowerWrapper = document.getElementById('flowerWrapper');
+  if (flowerWrapper && typeof gsap !== 'undefined') {
+    floatAnim = gsap.to(flowerWrapper, {
+      y: 12, duration: 3, ease: "sine.inOut", yoyo: true, repeat: -1
+    });
+
+    xTo = gsap.quickTo(flowerWrapper, "rotationY", {duration: 1, ease: "power3.out"});
+    yTo = gsap.quickTo(flowerWrapper, "rotationX", {duration: 1, ease: "power3.out"});
+
+    window.addEventListener("mousemove", (e) => {
+      if (!isActive) return;
+      xTo(-(window.innerWidth  / 2 - e.pageX) / 35);
+      yTo( (window.innerHeight / 2 - e.pageY) / 35);
+    });
+  }
+}
+
 function setupEventListeners() {
-  // 1. Flor de Cerejeira que desabrocha (Gate Inicial)
-  const cherryBlossomSvg = document.getElementById('cherry-blossom-svg');
-  const flowerGateContainer = document.getElementById('flower-gate-container');
-  const envelopeSection = document.getElementById('envelope-section');
-
-  cherryBlossomSvg.addEventListener('click', () => {
-    if (letter.getFlowState() !== 'flower') return;
-
-    // Desabrocha a flor (aplica rotações e miolo)
-    cherryBlossomSvg.classList.add('blossomed');
-    document.getElementById('flower-center').classList.remove('opacity-0');
-    document.getElementById('flower-details').classList.remove('opacity-0');
-
-    // Inicia a música de fundo imediatamente (contorna autoplay)
-    audioEl.play().then(() => {
-      player.play();
-      updatePlayerUI();
-    }).catch(err => console.warn("Player bloqueado pelo autoplay do navegador:", err));
-
-    // Após 1.3s, fade-out da flor e revela o envelope
-    setTimeout(() => {
-      flowerGateContainer.classList.add('opacity-0', 'scale-90');
-      
-      setTimeout(() => {
-        flowerGateContainer.classList.add('hidden');
-        envelopeSection.classList.remove('hidden');
-        
-        // Transição de fade-in para o envelope
-        setTimeout(() => {
-          envelopeSection.classList.remove('opacity-0', 'scale-75');
-          envelopeSection.classList.add('opacity-100', 'scale-100');
-        }, 50);
-      }, 700);
-    }, 1300);
-  });
-
-  // 2. Abertura do Envelope e Expansão da Carta
-  const envelopeContainer = document.getElementById('envelope-container');
-  const envelopeFlap = document.getElementById('envelope-flap');
-  const letterPaper = document.getElementById('letter-paper');
-
-  envelopeContainer.addEventListener('click', () => {
-    if (letter.getFlowState() === 'letter') return; // evita clique duplo
-
-    letter.open(); // Altera flowState para 'letter' e isOpen para true
-
-    // Dobra a aba do envelope para trás
-    envelopeFlap.classList.add('open-flap');
-
-    // Desliza e expande a carta
-    setTimeout(() => {
-      letterPaper.classList.add('letter-open');
-      envelopeContainer.classList.add('pointer-events-none');
-
-      // Dispara digitação se necessário
-      if (!letter.isTyped) {
-        setTimeout(startTypingEffect, 600);
-      }
-    }, 500);
-  });
-
-  // 3. Transição da Carta para a Seção Hero (Rajada de Pétalas)
+  const flowerWrapper = document.getElementById('flowerWrapper');
   const btnContinue = document.getElementById('btn-continue');
-  const gateFlowSection = document.getElementById('gate-flow-section');
+  const sceneSection = document.getElementById('scene-section');
   const heroFlowSection = document.getElementById('hero-flow-section');
   const audioPlayerBar = document.getElementById('audio-player-bar');
 
-  btnContinue.addEventListener('click', () => {
-    letter.setFlowState('transitioning');
+  if (flowerWrapper) {
+    flowerWrapper.addEventListener('click', () => {
+      if (!isActive || typeof gsap === 'undefined') return;
+      isActive = false;
 
-    // Rajada de pétalas de cerejeira cobrindo a tela
-    SakuraEffect.burst(75);
+      // Mostra o botão de pular a animação
+      const btnSkip = document.getElementById('btn-skip-intro');
+      if (btnSkip) btnSkip.classList.remove('hidden');
 
-    // Após o estouro de pétalas cobrir a visão, realiza a transição
-    setTimeout(() => {
-      gateFlowSection.classList.add('opacity-0', 'scale-95');
-      
-      setTimeout(() => {
-        gateFlowSection.classList.add('hidden');
-        
-        // Exibe Hero
-        heroFlowSection.classList.remove('hidden');
-        setTimeout(() => {
-          heroFlowSection.classList.remove('opacity-0', 'translate-y-8');
-          heroFlowSection.classList.add('opacity-100', 'translate-y-0');
-        }, 50);
+      // Start audio
+      audioEl.play().then(() => {
+        player.play();
+        updatePlayerUI();
+      }).catch(err => console.warn("Player bloqueado:", err));
 
-        // Mostra Player flutuante
-        audioPlayerBar.classList.remove('translate-y-24');
-        audioPlayerBar.classList.add('translate-y-0');
+      letter.setFlowState('letter');
 
-        letter.setFlowState('hero');
-        startSlideshow();
-      }, 600);
-    }, 400);
-  });
+      if (floatAnim) floatAnim.kill();
+      gsap.to(flowerWrapper, { rotationX: 0, rotationY: 0, y: 0, duration: 0.6, ease: "power2.out" });
+      gsap.to("#hint", { autoAlpha: 0, duration: 0.3 });
+
+      const tl = gsap.timeline();
+
+      // Botão Pular avança a timeline
+      if (btnSkip) {
+        btnSkip.addEventListener('click', () => {
+          tl.progress(1);
+          btnSkip.classList.add('hidden');
+          if (!letter.isTyped) startTypingEffect(true);
+        }, { once: true });
+      }
+
+      tl.to(flowerWrapper, { scale: 1.06, duration: 0.3, ease: "power1.out" }, 0)
+        .to(flowerWrapper, { scale: 1,    duration: 0.3, ease: "power1.in" },  0.3);
+
+      LAYERS.forEach((lid, li) => {
+        const count  = COUNTS[li];
+        const startT = 0.3 + li * 0.15;
+
+        for (let i = 0; i < count; i++) {
+          const el = document.getElementById(`${lid}_p${i}`);
+          if (!el) continue;
+          tl.to(el, {
+            rotateX:  -160,
+            skewY:    (i % 2 === 0 ? 6 : -6),
+            duration: 1.3,
+            ease: "power2.inOut",
+          }, startT + i * 0.04)
+          .set(el, { zIndex: 1 }, startT + i * 0.04 + 0.65)
+          .to(el, {
+            skewY: 0,
+            rotateX: -165,
+            duration: 0.6,
+            ease: "elastic.out(1, 0.5)"
+          }, startT + i * 0.04 + 1.3);
+        }
+      });
+
+      const pollenC = document.getElementById('pollenContainer');
+      if (pollenC) {
+        for (let i = 0; i < 50; i++) {
+          const p = document.createElement('div');
+          p.className = 'pollen-dot';
+          const size = 2 + Math.random() * 5;
+          p.style.cssText = `width:${size}px;height:${size}px;margin-left:${-size/2}px;margin-top:${-size/2}px;`;
+          pollenC.appendChild(p);
+          const tx = (Math.random() - 0.5) * 500;
+          const ty = (Math.random() - 0.5) * 500 - 80;
+          const dur = 2 + Math.random();
+          const del = 0.5 + Math.random() * 0.5;
+          tl.to(p, { x: tx, y: ty, scale: Math.random() * 2 + 0.5, opacity: Math.random() * 0.8 + 0.2, duration: dur, ease: "power2.out" }, del)
+            .to(p, { opacity: 0, duration: 0.8 }, del + dur - 0.8);
+        }
+      }
+
+      tl.to("#card", {
+        opacity: 1,
+        position: 'fixed', top: '5%', bottom: '5%', left: '5%', right: '5%',
+        width: 'auto', height: 'auto',
+        borderRadius: "8px",
+        y: -20, z: 40,
+        duration: 1.2, ease: "expo.inOut"
+      }, 1.8)
+      .to("#cardBorder", { borderRadius: "6px", duration: 1.2, ease: "expo.inOut" }, 1.8)
+      .set("#card", { zIndex: 20 }, 1.9)
+      .to("#card", {
+        y: 0, z: 100, scale: 1.08,
+        duration: 1.2, ease: "power3.out"
+      }, 3.0)
+      .to("#layerOuter, #layerMid, #layerInner", {
+        z: -200, opacity: 0.2, duration: 1.2, ease: "power3.out"
+      }, 3.0)
+      .add(() => {
+        allPetals.forEach(({ el }, idx) => {
+          const tx    = (Math.random() - 0.45) * 1400;
+          const ty    = -300 - Math.random() * 600;
+          const tz    = -200 - Math.random() * 300;
+          const rot   = (Math.random() - 0.5) * 720;
+          const rotX  = -90 + (Math.random() - 0.5) * 180;
+          const delay = Math.random() * 0.5;
+
+          gsap.to(el, {
+            x: tx, y: ty, z: tz,
+            rotation: rot, rotateX: rotX,
+            scale: 0.2 + Math.random() * 0.6,
+            opacity: 0,
+            duration: 2.2 + Math.random() * 1.2,
+            ease: "power1.inOut",
+            delay
+          });
+        });
+      }, 4.0)
+      .to("#card-header", { opacity: 1, duration: 0.8 }, 4.5)
+      .to("#letter-content", { opacity: 1, duration: 0.8 }, 4.5)
+      .add(() => {
+        if (!letter.isTyped) {
+          startTypingEffect(false);
+        }
+      }, 5.0);
+    });
+  }
+
+  if (btnContinue) {
+    btnContinue.addEventListener('click', () => {
+      letter.setFlowState('transitioning');
+      SakuraEffect.burst(75);
+
+      if (typeof gsap !== 'undefined') {
+        const tlEnd = gsap.timeline();
+        tlEnd.to("#card", { scale: 5, autoAlpha: 0, duration: 1.8, ease: "power3.inOut" }, 0)
+             .to("#bgSite", { filter: "blur(0px) brightness(1)", opacity: 1, duration: 2, ease: "power2.inOut" }, 0)
+             .add(() => {
+                if(sceneSection) sceneSection.classList.add('hidden');
+                if(heroFlowSection) {
+                  heroFlowSection.classList.remove('hidden');
+                  setTimeout(() => {
+                    heroFlowSection.classList.remove('opacity-0', 'translate-y-8');
+                    heroFlowSection.classList.add('opacity-100', 'translate-y-0');
+                  }, 50);
+                }
+
+                if(audioPlayerBar) {
+                  audioPlayerBar.classList.remove('translate-y-24');
+                  audioPlayerBar.classList.add('translate-y-0');
+                }
+
+                letter.setFlowState('hero');
+                startSlideshow();
+             }, 1.5);
+      }
+    });
+  }
 
   // 4. Player de Áudio
   const btnPlayPause = document.getElementById('player-play-pause');
   const btnNext = document.getElementById('player-next');
 
-  btnPlayPause.addEventListener('click', () => {
-    if (player.isPlaying) {
-      audioEl.pause();
-      player.pause();
-    } else {
-      audioEl.play().catch(err => console.error("Erro ao tocar:", err));
-      player.play();
-    }
-    updatePlayerUI();
-  });
+  if (btnPlayPause) {
+    btnPlayPause.addEventListener('click', () => {
+      if (player.isPlaying) {
+        audioEl.pause();
+        player.pause();
+      } else {
+        audioEl.play().catch(err => console.error("Erro ao tocar:", err));
+        player.play();
+      }
+      updatePlayerUI();
+    });
+  }
 
-  btnNext.addEventListener('click', handleNextTrack);
+  if (btnNext) {
+    btnNext.addEventListener('click', handleNextTrack);
+  }
 
   // 5. Botões de Acesso às Galerias Dinâmicas (Modal Randômico)
   const categoryButtons = document.querySelectorAll('.category-btn');
@@ -214,29 +341,64 @@ function setupEventListeners() {
 
   const btnCloseGallery = document.getElementById('btn-close-gallery');
   const galleryModal = document.getElementById('gallery-modal');
-  btnCloseGallery.addEventListener('click', () => {
-    galleryModal.classList.add('hidden');
-    galleryModal.classList.remove('flex');
-  });
+  const sakuraContainer = document.getElementById('sakura-container');
+
+  if (btnCloseGallery && galleryModal) {
+    btnCloseGallery.addEventListener('click', () => {
+      galleryModal.classList.add('hidden');
+      galleryModal.classList.remove('flex');
+      if (sakuraContainer) sakuraContainer.classList.remove('opacity-0');
+    });
+  }
 
   // 6. Lightbox
   const lightbox = document.getElementById('lightbox-modal');
   const btnCloseLightbox = document.getElementById('btn-close-lightbox');
   
-  btnCloseLightbox.addEventListener('click', () => {
-    lightbox.classList.add('hidden');
-  });
-  
-  lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox || e.target.classList.contains('lightbox-overlay')) {
+  if (btnCloseLightbox && lightbox) {
+    btnCloseLightbox.addEventListener('click', () => {
       lightbox.classList.add('hidden');
-    }
-  });
+    });
+    
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox || e.target.classList.contains('lightbox-overlay')) {
+        lightbox.classList.add('hidden');
+      }
+    });
+  }
+
+  // 7. Modal Reler Carta
+  const btnReread = document.getElementById('btn-reread-letter');
+  const letterModal = document.getElementById('letter-modal');
+  const btnCloseLetterModal = document.getElementById('btn-close-letter-modal');
+  
+  if (btnReread && letterModal && btnCloseLetterModal) {
+    btnReread.addEventListener('click', () => {
+      document.getElementById('letter-modal-text').innerHTML = letterText.replace(/\n/g, '<br>');
+      letterModal.classList.remove('hidden');
+      letterModal.classList.add('flex');
+      if (sakuraContainer) sakuraContainer.classList.add('opacity-0');
+    });
+    
+    btnCloseLetterModal.addEventListener('click', () => {
+      letterModal.classList.add('hidden');
+      letterModal.classList.remove('flex');
+      if (sakuraContainer) sakuraContainer.classList.remove('opacity-0');
+    });
+  }
 
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      lightbox.classList.add('hidden');
-      galleryModal.classList.add('hidden');
+      if (lightbox) lightbox.classList.add('hidden');
+      if (galleryModal) {
+        galleryModal.classList.add('hidden');
+        if (sakuraContainer) sakuraContainer.classList.remove('opacity-0');
+      }
+      if (letterModal) {
+        letterModal.classList.add('hidden');
+        letterModal.classList.remove('flex');
+        if (sakuraContainer) sakuraContainer.classList.remove('opacity-0');
+      }
     }
   });
 }
@@ -283,10 +445,24 @@ function updatePlayerUI() {
   }
 }
 
-function startTypingEffect() {
+function startTypingEffect(instant = false) {
   const textContainer = document.getElementById('typed-text');
+  const btnSkip = document.getElementById('btn-skip-intro');
   textContainer.innerHTML = '';
   
+  if (instant) {
+    textContainer.innerHTML = letterText.replace(/\n/g, '<br>');
+    letter.setTyped(true);
+    textContainer.classList.remove('after:animate-pulse');
+    const continueContainer = document.getElementById('continue-action-container');
+    if(continueContainer) {
+      continueContainer.classList.remove('opacity-0');
+      continueContainer.classList.add('opacity-100');
+    }
+    if (btnSkip) btnSkip.classList.add('hidden');
+    return;
+  }
+
   let i = 0;
   const speed = 25; // ms por caractere
   const characters = Array.from(letterText);
@@ -302,17 +478,20 @@ function startTypingEffect() {
       i++;
 
       const letterContent = document.getElementById('letter-content');
-      letterContent.scrollTop = letterContent.scrollHeight;
+      if(letterContent) letterContent.scrollTop = letterContent.scrollHeight;
 
       setTimeout(type, speed);
     } else {
       letter.setTyped(true);
       textContainer.classList.remove('after:animate-pulse');
       
-      // Revela o botão de continuar de forma suave
+      // Revela o botão de continuar de forma suave e oculta o de pular
       const continueContainer = document.getElementById('continue-action-container');
-      continueContainer.classList.remove('opacity-0');
-      continueContainer.classList.add('opacity-100');
+      if(continueContainer) {
+        continueContainer.classList.remove('opacity-0');
+        continueContainer.classList.add('opacity-100');
+      }
+      if (btnSkip) btnSkip.classList.add('hidden');
     }
   }
 
@@ -362,9 +541,12 @@ function openGalleryModal(category) {
   const modal = document.getElementById('gallery-modal');
   const title = document.getElementById('gallery-modal-title');
   const grid = document.getElementById('gallery-modal-grid');
+  const sakuraContainer = document.getElementById('sakura-container');
+
+  if (sakuraContainer) sakuraContainer.classList.add('opacity-0');
 
   const categoryTitles = {
-    sozinha: 'Ela (Bianca Rayssa)',
+    sozinha: 'Ela (Bianca)',
     'comigo-ivan': 'Nós Dois',
     zuadas: 'Momentos Divertidos',
     iuri: 'Nosso Iuri'
@@ -382,13 +564,13 @@ function openGalleryModal(category) {
     polaroid.className = `card-polaroid bg-alabaster p-3 pb-6 shadow-md rounded-sm border border-rosacha/20 cursor-pointer transform ${rot} hover:rotate-0 hover:scale-105 transition-all duration-300 w-full max-w-[280px]`;
     
     polaroid.innerHTML = `
-      <div class="relative overflow-hidden aspect-square bg-neutral-100 rounded-sm mb-3">
+      <div class="relative overflow-hidden aspect-[4/5] bg-neutral-100 rounded-sm mb-3">
         <img src="${img.src}" 
              alt="${img.caption}" 
-             class="w-full h-full object-cover opacity-0 transition-opacity duration-500"
+             class="w-full h-full object-cover object-top opacity-0 transition-opacity duration-500"
              loading="lazy"
              onload="this.classList.remove('opacity-0')"
-             onerror="this.onerror=null; this.src='https://placehold.co/400x400/FFF9F2/5C1322?text=Bianca+❤️'; this.classList.remove('opacity-0');">
+             onerror="this.onerror=null; this.src='https://placehold.co/400x500/FFF9F2/5C1322?text=Bianca+❤️'; this.classList.remove('opacity-0');">
       </div>
       <p class="font-manuscrita text-chocolate text-center text-lg leading-tight mt-2 px-1 select-none">${img.caption}</p>
     `;
