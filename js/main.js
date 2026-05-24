@@ -680,19 +680,17 @@ function flipCard(cardEl, newImageSrc, newCaption) {
         onComplete: () => {
           cardEl.classList.add('transition-all', 'duration-300');
 
-          const rect = cardEl.getBoundingClientRect();
-          const centerX = rect.left + rect.width / 2;
-          const centerY = rect.top + rect.height / 2;
+          const parentContext = cardEl.parentElement;
+          parentContext.style.position = 'relative'; // Garante o referencial
           
-          // Define contexto de empilhamento para que o burstContainer fique atrás do cardEl
-          const parentContext = cardEl.closest('#gallery-modal, #hero-flow-section') || document.body;
+          const centerX = cardEl.offsetLeft + cardEl.offsetWidth / 2;
+          const centerY = cardEl.offsetTop + cardEl.offsetHeight / 2;
           
           const originalZ = cardEl.style.zIndex;
           const originalPos = cardEl.style.position;
           cardEl.style.position = 'relative';
           cardEl.style.zIndex = '50';
           
-          // 40 pétalas, no parentContext, com z-index 10 (atrás do card que está com 50)
           SakuraEffect.miniBurst(centerX, centerY, 40, parentContext, 10);
 
           setTimeout(() => {

@@ -211,7 +211,7 @@ export const SakuraEffect = {
     }
 
     const burstContainer = document.createElement('div');
-    burstContainer.style.cssText = `position: fixed; top: ${originY}px; left: ${originX}px; z-index: ${zIndex}; pointer-events: none; overflow: visible;`;
+    burstContainer.style.cssText = `position: absolute; top: ${originY}px; left: ${originX}px; z-index: ${zIndex}; pointer-events: none; overflow: visible;`;
     targetParent.appendChild(burstContainer);
 
     for (let i = 0; i < count; i++) {
