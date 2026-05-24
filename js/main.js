@@ -208,6 +208,7 @@ function setupEventListeners() {
 
       if (floatAnim) floatAnim.kill();
       gsap.to(flowerWrapper, { rotationX: 0, rotationY: 0, y: 0, duration: 0.6, ease: "power2.out" });
+      gsap.set(flowerWrapper, { pointerEvents: "none" }); // Evitar que a flor bloqueie o clique depois de invisível
       gsap.to("#hint", { autoAlpha: 0, duration: 0.3 });
 
       const tl = gsap.timeline();
@@ -299,18 +300,17 @@ function setupEventListeners() {
       }, 2.0);
 
       tl.to("#layerOuter, #layerMid, #layerInner, #flower-center-core", {
-        z: -100, opacity: 0, duration: 1.2, ease: "power2.inOut"
+        opacity: 0, duration: 1.2, ease: "power2.inOut"
       }, 1.8)
       .to("#card", { opacity: 1, duration: 0.6, ease: "power1.out" }, 1.6)
       .to("#card", {
         width: '90vw',
         height: '85vh',
         borderRadius: "16px",
-        z: 150, // Move a carta bem à frente das pétalas
         duration: 2.0, ease: "power2.out"
       }, 1.8)
       .to("#cardBorder", { borderRadius: "12px", duration: 1.2, ease: "expo.inOut" }, 1.8)
-      .set("#card", { zIndex: 20 }, 1.9)
+      .set("#card", { zIndex: 20 }, 3.5) // Só sobe o z-index depois que a flor sumir por completo
       .to("#card", {
         z: 200, scale: 1.05,
         duration: 1.2, ease: "power3.out"
