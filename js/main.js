@@ -228,13 +228,13 @@ function setupEventListeners() {
       tl.to("#layerOuter, #layerMid, #layerInner", {
         z: -100, duration: 1.2, ease: "power2.inOut"
       }, 1.8)
+      .to("#card", { opacity: 1, duration: 0.6, ease: "power1.out" }, 1.6)
       .to("#card", {
-        opacity: 1,
         width: '90vw',
         height: '85vh',
         borderRadius: "16px",
         z: 150, // Move a carta bem à frente das pétalas
-        duration: 2.0, ease: "power2.inOut"
+        duration: 2.0, ease: "power2.out"
       }, 1.8)
       .to("#cardBorder", { borderRadius: "12px", duration: 1.2, ease: "expo.inOut" }, 1.8)
       .set("#card", { zIndex: 20 }, 1.9)
