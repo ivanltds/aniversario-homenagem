@@ -217,12 +217,12 @@ function setupEventListeners() {
         }
       }
 
-      // Explosão colossal (1000 pétalas) no momento do desabrochar (1.8s)
+      // Explosão colossal com pétalas gigantes (isMega=true) para cobrir a tela sem travar (1.8s)
       tl.add(() => {
          const rect = flowerWrapper.getBoundingClientRect();
          const cx = rect.left + rect.width / 2;
          const cy = rect.top + rect.height / 2;
-         SakuraEffect.miniBurst(cx, cy, 1000, document.body, 100000);
+         SakuraEffect.miniBurst(cx, cy, 150, document.body, 100000, true);
       }, 1.8);
 
       tl.to("#layerOuter, #layerMid, #layerInner", {
@@ -234,7 +234,7 @@ function setupEventListeners() {
         height: '85vh',
         borderRadius: "16px",
         z: 150, // Move a carta bem à frente das pétalas
-        duration: 1.2, ease: "expo.inOut"
+        duration: 2.0, ease: "power2.inOut"
       }, 1.8)
       .to("#cardBorder", { borderRadius: "12px", duration: 1.2, ease: "expo.inOut" }, 1.8)
       .set("#card", { zIndex: 20 }, 1.9)

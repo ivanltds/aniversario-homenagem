@@ -189,7 +189,7 @@ export const SakuraEffect = {
   },
 
   // Mini explosão radial (360 graus) a partir de um ponto
-  miniBurst(originX, originY, count = 15, targetParent = document.body, zIndex = 9999) {
+  miniBurst(originX, originY, count = 15, targetParent = document.body, zIndex = 9999, isMega = false) {
     this.injectStyles();
     
     if (!document.getElementById('sakura-miniburst-styles')) {
@@ -218,12 +218,12 @@ export const SakuraEffect = {
       const petal = document.createElement('div');
       petal.className = 'sakura-petal';
 
-      const sizeWidth = Math.random() * 15 + 10;
+      const sizeWidth = isMega ? (Math.random() * 60 + 40) : (Math.random() * 15 + 10);
       const sizeHeight = sizeWidth * 1.2;
-      const duration = Math.random() * 0.6 + 0.5; // 0.5 a 1.1s
+      const duration = isMega ? (Math.random() * 1.5 + 1.5) : (Math.random() * 0.6 + 0.5); 
       
       const angle = Math.random() * Math.PI * 2;
-      const distance = Math.random() * 150 + 80;
+      const distance = isMega ? (Math.random() * 1000 + 400) : (Math.random() * 150 + 80);
       const tx = Math.cos(angle) * distance;
       const ty = Math.sin(angle) * distance;
       const rot = (Math.random() - 0.5) * 720;
@@ -245,6 +245,6 @@ export const SakuraEffect = {
     
     setTimeout(() => {
       if (burstContainer.parentNode) burstContainer.remove();
-    }, 1500);
+    }, isMega ? 4000 : 1500);
   }
 };
