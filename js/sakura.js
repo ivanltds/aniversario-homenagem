@@ -230,6 +230,7 @@ export const SakuraEffect = {
 
       petal.style.width = `${sizeWidth}px`;
       petal.style.height = `${sizeHeight}px`;
+      petal.style.position = 'absolute'; // Override do fixed da classe principal
       petal.style.left = '0';
       petal.style.top = '0';
       petal.style.setProperty('--tx', `${tx}px`);
