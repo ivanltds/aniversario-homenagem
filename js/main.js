@@ -373,10 +373,7 @@ function setupEventListeners() {
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
         
-        // Dispara uma explosão colossal de pétalas
-        SakuraEffect.miniBurst(centerX, centerY, 80, document.body, 100000);
-        
-        // Explosão de letras "EU TE AMO"
+        // Delega as fases de pétalas e explosão para a função
         createTextExplosion("EU TE AMO", centerX, centerY);
       });
     }
@@ -672,45 +669,62 @@ function createTextExplosion(text, x, y) {
   if (typeof gsap === 'undefined') return;
 
   const container = document.createElement('div');
-  container.style.cssText = `position: fixed; top: ${y}px; left: ${x}px; z-index: 100001; pointer-events: none; display: flex; justify-content: center; align-items: center;`;
+  container.style.cssText = `position: fixed; top: ${y}px; left: ${x}px; transform: translate(-50%, -50%); z-index: 100001; pointer-events: none; display: flex; justify-content: center; align-items: center; gap: 2px;`;
   document.body.appendChild(container);
 
   const letters = text.split('');
+  const spans = [];
   const colors = ['#FFD1DC', '#FFC0CB', '#FFB6C1', '#FF69B4', '#F2C6C2'];
 
   letters.forEach((char) => {
-    if (char === ' ') return;
-
     const span = document.createElement('span');
     span.textContent = char;
-    span.className = 'font-serif font-bold text-5xl sm:text-7xl';
-    span.style.color = colors[Math.floor(Math.random() * colors.length)];
-    span.style.position = 'absolute';
-    span.style.textShadow = '0 0 20px rgba(255,255,255,0.9), 0 0 10px rgba(242,198,194,0.5)';
+    
+    if (char === ' ') {
+      span.style.width = '20px';
+    } else {
+      span.className = 'font-serif font-bold text-5xl sm:text-7xl block';
+      span.style.color = colors[Math.floor(Math.random() * colors.length)];
+      span.style.textShadow = '0 0 20px rgba(255,255,255,0.9), 0 0 10px rgba(242,198,194,0.5)';
+      span.style.display = 'inline-block';
+    }
     
     container.appendChild(span);
+    spans.push({ el: span, isSpace: char === ' ' });
+  });
 
-    const angle = (Math.random() * Math.PI * 2);
-    const distance = 100 + Math.random() * 200; // Raio da explosão
-    const tx = Math.cos(angle) * distance;
-    const ty = Math.sin(angle) * distance;
+  // Fase 1: Surge legível
+  gsap.fromTo(container, 
+    { scale: 0, opacity: 0 }, 
+    { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.7)" }
+  );
+  SakuraEffect.miniBurst(x, y, 20, document.body, 100000);
 
-    gsap.fromTo(span, 
-      { x: 0, y: 0, scale: 0.2, opacity: 1, rotation: 0 },
-      { 
+  // Fase 2: Explode as letras após 1s
+  setTimeout(() => {
+    SakuraEffect.miniBurst(x, y, 80, document.body, 100000);
+
+    spans.forEach(({ el, isSpace }) => {
+      if (isSpace) return;
+
+      const angle = (Math.random() * Math.PI * 2);
+      const distance = 150 + Math.random() * 250;
+      const tx = Math.cos(angle) * distance;
+      const ty = Math.sin(angle) * distance;
+
+      gsap.to(el, { 
         x: tx, 
         y: ty, 
-        scale: 1 + Math.random() * 1.5, 
+        scale: 1.5 + Math.random() * 2, 
         opacity: 0, 
         rotation: (Math.random() - 0.5) * 720,
         duration: 1.5 + Math.random() * 1,
-        ease: "power3.out",
-        onComplete: () => span.remove()
-      }
-    );
-  });
+        ease: "power3.out"
+      });
+    });
+  }, 1000);
 
-  setTimeout(() => container.remove(), 3000);
+  setTimeout(() => container.remove(), 3500);
 }
 
 // ==========================================
