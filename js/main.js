@@ -12,14 +12,7 @@ const playlist = [
 
 // As fotos da galeria agora são carregadas automaticamente pelo build (GalleryState gerencia isso)
 
-// Imagens selecionadas para o slideshow automático do Hero Banner
-const slideshowImages = [
-  'fotos/sozinha/20250706_164449.jpg',
-  'fotos/comigo-ivan/20251222_193309.jpg',
-  'fotos/comigo-ivan/20251101_233301.jpg',
-  'fotos/iuri/20250804_210955.jpg',
-  'fotos/comigo-ivan/20251224_234002.jpg'
-];
+// As fotos da galeria agora são carregadas automaticamente pelo build (GalleryState gerencia isso)
 
 // Texto da carta
 const letterText = `Minha linda Bianca,
@@ -625,12 +618,27 @@ function startTypingEffect(instant = false) {
   typeIntro();
 }
 
-// Constrói o HTML inicial do Slideshow do Hero Banner
 function buildSlideshow() {
   const container = document.getElementById('slideshow-container');
   container.innerHTML = '';
 
-  slideshowImages.forEach((src, idx) => {
+  // Seleciona dinamicamente até 10 fotos aleatórias de todas as categorias
+  let allPhotos = [];
+  if (gallery && gallery.photosData) {
+    Object.values(gallery.photosData).forEach(arr => {
+      if (arr) allPhotos.push(...arr);
+    });
+  }
+  
+  // Embaralha as fotos
+  allPhotos.sort(() => 0.5 - Math.random());
+  const selectedPhotos = allPhotos.slice(0, 10);
+
+  if (selectedPhotos.length === 0) {
+    selectedPhotos.push('https://placehold.co/800x450/FFF9F2/5C1322?text=Bianca+❤️');
+  }
+
+  selectedPhotos.forEach((src, idx) => {
     const img = document.createElement('img');
     img.src = src;
     img.className = `absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms] ease-in-out ${idx === 0 ? 'opacity-100' : 'opacity-0'}`;
